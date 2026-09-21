@@ -1,0 +1,27 @@
+# Dependencias
+node_modules/
+
+# Builds
+dist/
+.angular/
+build/
+coverage/
+
+# Entorno y secretos (NUNCA commitear)
+.env
+.env.*
+!.env.example
+apps/web/src/environments/environment.local.ts
+
+# Prisma
+apps/api/prisma/*.db
+
+# Varios
+.DS_Store
+*.log
+npm-debug.log*
+.idea/
+.vscode/*
+!.vscode/extensions.json
+playwright-report/
+test-results/

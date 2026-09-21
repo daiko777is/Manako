@@ -1,0 +1,55 @@
+# Entorno local de desarrollo para Manakō.
+# La BD "real" del proyecto es Supabase (ver docs/SETUP.md).
+# Este compose levanta: Postgres local (para desarrollar sin Supabase), Redis y la API.
+#
+# Uso rápido:
+#   docker compose up -d db redis
+#   Aplicar migraciones:  psql "$DATABASE_URL_LOCAL" -f supabase/migrations/0001_initial_schema.sql
+#                         psql "$DATABASE_URL_LOCAL" -f supabase/migrations/0002_functions_rls.sql
+#                         psql "$DATABASE_URL_LOCAL" -f supabase/seed.sql
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: manako
+      POSTGRES_PASSWORD: manako_dev_password
+      POSTGRES_DB: manako
+    ports:
+      - "5432:5432"
+    volumes:
+      - manako_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U manako"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    env_file:
+      - apps/api/.env
+    environment:
+      # Sobrescrituras para la red interna del compose
+      DATABASE_URL: postgresql://manako:manako_dev_password@db:5432/manako?schema=public
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+volumes:
+  manako_pgdata:

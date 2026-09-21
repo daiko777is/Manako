@@ -1,0 +1,30 @@
+{
+  "name": "manako",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Manakō — Plataforma de cursos online (Angular + RxJS + NestJS + Supabase + Stripe)",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,web -c blue,green \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:api": "npm run start:dev -w @manako/api",
+    "dev:web": "npm run start -w @manako/web",
+    "build": "npm run build -w @manako/api && npm run build -w @manako/web",
+    "build:api": "npm run build -w @manako/api",
+    "build:web": "npm run build -w @manako/web",
+    "test": "npm run test -w @manako/api",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck -w @manako/api",
+    "prisma:generate": "npm run prisma:generate -w @manako/api",
+    "db:push": "echo '→ Usa Supabase CLI: supabase db push (ver docs/SETUP.md)'",
+    "db:seed": "echo '→ Usa Supabase CLI: supabase db reset (aplica supabase/seed.sql)'"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

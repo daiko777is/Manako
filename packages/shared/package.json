@@ -1,0 +1,8 @@
+{
+  "name": "@manako/shared",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Tipos compartidos entre @manako/web y @manako/api (solo tipos, sin código en runtime)",
+  "types": "src/index.ts",
+  "sideEffects": false
+}

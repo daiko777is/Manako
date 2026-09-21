@@ -1,0 +1,52 @@
+{
+  "name": "@manako/web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Manakō Web — Angular 18 (standalone + signals + RxJS) + Tailwind + Supabase Auth",
+  "scripts": {
+    "ng": "ng",
+    "prestart": "node scripts/env-to-environment.mjs",
+    "start": "ng serve",
+    "prebuild": "node scripts/env-to-environment.mjs",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test",
+    "lint": "eslint .",
+    "e2e": "playwright test"
+  },
+  "dependencies": {
+    "@angular/common": "^18.2.2",
+    "@angular/compiler": "^18.2.2",
+    "@angular/core": "^18.2.2",
+    "@angular/forms": "^18.2.2",
+    "@angular/platform-browser": "^18.2.2",
+    "@angular/platform-browser-dynamic": "^18.2.2",
+    "@angular/router": "^18.2.2",
+    "@supabase/supabase-js": "^2.45.4",
+    "rxjs": "~7.8.1",
+    "tslib": "^2.7.0",
+    "video.js": "^8.17.3",
+    "zone.js": "~0.14.10"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^18.2.2",
+    "@angular/cli": "^18.2.2",
+    "@angular/compiler-cli": "^18.2.2",
+    "@eslint/js": "^9.9.1",
+    "@playwright/test": "^1.47.0",
+    "@types/jasmine": "~5.1.4",
+    "angular-eslint": "^18.3.0",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.9.1",
+    "jasmine-core": "~5.1.2",
+    "karma": "~6.4.4",
+    "karma-chrome-launcher": "~3.2.0",
+    "karma-coverage": "~2.2.1",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "~2.1.0",
+    "postcss": "^8.4.44",
+    "tailwindcss": "^3.4.10",
+    "typescript": "~5.5.4",
+    "typescript-eslint": "^8.3.0"
+  }
+}
