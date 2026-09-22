@@ -11,40 +11,37 @@ import { IconComponent } from '../../shared/components/icon.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="grid min-h-[calc(100vh-4rem)] lg:grid-cols-2">
-      <!-- Panel de marca -->
+      <!-- Panel de marca: plano, retícula sutil -->
       <aside class="relative hidden overflow-hidden bg-slate-950 lg:block">
-        <div class="absolute inset-0 bg-mesh-hero opacity-90" aria-hidden="true"></div>
-        <div class="absolute inset-0 bg-grid-fade bg-grid opacity-30" aria-hidden="true"></div>
-        <div class="absolute -left-24 top-1/4 h-80 w-80 animate-blob rounded-full bg-brand-600/30 blur-3xl" aria-hidden="true"></div>
-        <div class="absolute -right-16 bottom-10 h-72 w-72 animate-blob rounded-full bg-fuchsia-600/25 blur-3xl [animation-delay:-5s]" aria-hidden="true"></div>
+        <div class="absolute inset-0 bg-grid-fade bg-grid opacity-[0.05]" aria-hidden="true"></div>
 
         <div class="relative flex h-full flex-col justify-between p-12">
           <a routerLink="/" class="flex w-fit items-center gap-2.5">
-            <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 via-violet-600 to-fuchsia-500 font-heading text-lg font-bold text-white shadow-glow">M</span>
+            <span class="flex h-8 w-8 items-center justify-center rounded-md bg-brand-600 font-heading text-base font-bold text-white">M</span>
             <span class="font-heading text-lg font-bold text-white">Manakō</span>
           </a>
 
           <div>
-            <blockquote class="max-w-md">
-              <p class="font-heading text-2xl font-semibold leading-snug text-white">
-                "El desbloqueo secuencial cambió todo: terminé mi primer curso online completo en 3 semanas."
-              </p>
-              <footer class="mt-5 flex items-center gap-3">
-                <span class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 font-bold text-brand-200 backdrop-blur">JP</span>
-                <div class="text-sm">
-                  <p class="font-semibold text-white">Jimena P.</p>
-                  <p class="text-slate-400">Frontend Developer · ejemplo ilustrativo</p>
-                </div>
-              </footer>
-            </blockquote>
-
-            <div class="mt-10 flex gap-6 text-sm text-slate-300">
-              <span class="flex items-center gap-2"><span class="text-emerald-400"><app-icon name="check-circle" [size]="16" /></span> Progreso guardado al segundo</span>
-              <span class="flex items-center gap-2"><span class="text-emerald-400"><app-icon name="check-circle" [size]="16" /></span> Certificado al terminar</span>
-            </div>
+            <h2 class="max-w-sm font-heading text-3xl font-bold leading-snug text-white">
+              Retoma el curso justo donde lo dejaste.
+            </h2>
+            <ul class="mt-8 space-y-4 text-sm text-slate-300">
+              <li class="flex items-center gap-3">
+                <span class="text-emerald-400"><app-icon name="check-circle" [size]="17" /></span>
+                Progreso guardado automáticamente, segundo a segundo
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="text-emerald-400"><app-icon name="check-circle" [size]="17" /></span>
+                Lecciones desbloqueadas en orden, sin perderte nada
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="text-emerald-400"><app-icon name="check-circle" [size]="17" /></span>
+                Certificado al completar el 100% del currículo
+              </li>
+            </ul>
           </div>
 
-          <p class="text-xs text-slate-500">© {{ year }} Manakō · Aprende a tu ritmo</p>
+          <p class="text-xs text-slate-500">© {{ year }} Manakō</p>
         </div>
       </aside>
 
@@ -52,7 +49,7 @@ import { IconComponent } from '../../shared/components/icon.component';
       <main class="flex items-center justify-center px-4 py-16 sm:px-8">
         <div class="w-full max-w-md">
           <div class="mb-8 flex items-center gap-2.5 lg:hidden">
-            <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 via-violet-600 to-fuchsia-500 font-heading text-lg font-bold text-white">M</span>
+            <span class="flex h-9 w-9 items-center justify-center rounded-md bg-brand-600 font-heading text-lg font-bold text-white">M</span>
             <span class="font-heading text-lg font-bold text-slate-900">Manakō</span>
           </div>
 

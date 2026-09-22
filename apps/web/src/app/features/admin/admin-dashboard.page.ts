@@ -34,7 +34,7 @@ type Tab = 'metrics' | 'users' | 'courses' | 'payments';
             type="button"
             class="flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200"
             [class]="activeTab() === tab.id
-              ? 'bg-gradient-to-r from-brand-600 to-violet-600 text-white shadow-glow'
+              ? 'bg-slate-900 text-white'
               : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'"
             (click)="setTab(tab.id)"
           >
@@ -48,37 +48,37 @@ type Tab = 'metrics' | 'users' | 'courses' | 'payments';
       @if (activeTab() === 'metrics') {
         @if (metrics(); as m) {
           <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div class="card p-5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lift">
-              <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-violet-600 text-white shadow-glow">
+            <div class="card p-5">
+              <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
                 <app-icon name="users" [size]="18" />
               </span>
-              <p class="mt-3 font-heading text-3xl font-bold text-slate-900">{{ m.users.total }}</p>
+              <p class="mt-3 font-heading text-3xl font-bold text-slate-900 tnum">{{ m.users.total }}</p>
               <p class="mt-1 text-xs font-semibold uppercase tracking-wider text-slate-400">Usuarios</p>
               <p class="mt-2 text-xs text-slate-500">
                 {{ m.users.students }} estudiantes · {{ m.users.instructors }} instructores · {{ m.users.admins }} admins
               </p>
             </div>
-            <div class="card p-5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lift">
-              <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-brand-600 text-white shadow-glow">
+            <div class="card p-5">
+              <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-sky-50 text-sky-600">
                 <app-icon name="academic-cap" [size]="18" />
               </span>
-              <p class="mt-3 font-heading text-3xl font-bold text-slate-900">{{ m.courses.total }}</p>
+              <p class="mt-3 font-heading text-3xl font-bold text-slate-900 tnum">{{ m.courses.total }}</p>
               <p class="mt-1 text-xs font-semibold uppercase tracking-wider text-slate-400">Cursos</p>
               <p class="mt-2 text-xs text-slate-500">{{ m.courses.published }} publicados · {{ m.courses.drafts }} borradores</p>
             </div>
-            <div class="card p-5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lift">
-              <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-glow">
+            <div class="card p-5">
+              <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
                 <app-icon name="book" [size]="18" />
               </span>
-              <p class="mt-3 font-heading text-3xl font-bold text-slate-900">{{ m.enrollmentsActive }}</p>
+              <p class="mt-3 font-heading text-3xl font-bold text-slate-900 tnum">{{ m.enrollmentsActive }}</p>
               <p class="mt-1 text-xs font-semibold uppercase tracking-wider text-slate-400">Inscripciones activas</p>
               <p class="mt-2 text-xs text-slate-500">{{ m.lessonsCompletedToday }} lecciones completadas hoy</p>
             </div>
-            <div class="card p-5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lift">
-              <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-glow">
+            <div class="card p-5">
+              <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
                 <app-icon name="dollar" [size]="18" />
               </span>
-              <p class="mt-3 font-heading text-3xl font-bold text-slate-900">{{ formatMoney(m.revenueCents) }}</p>
+              <p class="mt-3 font-heading text-3xl font-bold text-slate-900 tnum">{{ formatMoney(m.revenueCents) }}</p>
               <p class="mt-1 text-xs font-semibold uppercase tracking-wider text-slate-400">Ingresos brutos</p>
               <p class="mt-2 text-xs text-slate-500">Reembolsado: {{ formatMoney(m.refundedCents) }}</p>
             </div>

@@ -5,49 +5,52 @@
 @tailwind utilities;
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   Manakō Design System
-   Tokens en 3 capas (skill design-system: primitive → semantic → component).
-   Efectos inspirados en hyperui.dev, flowbite, uiverse.io y spartan.ng
-   (adaptados a Tailwind + Angular; ver comentarios por bloque).
+   Manakō Design System — v2 "calm craft"
+   Reescrito siguiendo la skill ui-craft (Refactoring UI):
+   · Jerarquía por peso/color antes que por tratamiento (fills/gradientes)
+   · Un solo color de marca sólido; el degradado solo pinta DATO (progreso)
+   · Sombras de dos partes (cercana + ambiente), bordes hairline
+   · Radios contenidos (8–12px), densidad intencional
+   · Movimiento solo funcional: hover/active, reveal, skeletons
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ── Capa 1 · Primitivos ─────────────────────────────────────────────────── */
 :root {
-  --mk-indigo-500: #6366f1;
-  --mk-indigo-600: #4f46e5;
-  --mk-indigo-700: #4338ca;
-  --mk-violet-600: #7c3aed;
-  --mk-fuchsia-500: #d946ef;
-  --mk-sky-500: #0ea5e9;
-  --mk-emerald-500: #10b981;
-  --mk-amber-500: #f59e0b;
-  --mk-rose-500: #f43f5e;
-  --mk-slate-950: #020617;
-  --mk-slate-900: #0f172a;
-  --mk-slate-500: #64748b;
-  --mk-slate-200: #e2e8f0;
-  --mk-slate-100: #f1f5f9;
-  --mk-slate-50: #f8fafc;
-  --mk-white: #ffffff;
+  --mk-brand-50: #eef2ff;
+  --mk-brand-100: #e0e7ff;
+  --mk-brand-500: #6366f1;
+  --mk-brand-600: #4f46e5;
+  --mk-brand-700: #4338ca;
+  --mk-ink: #0f172a;
+  --mk-ink-soft: #334155;
+  --mk-muted: #64748b;
+  --mk-faint: #94a3b8;
+  --mk-line: #e2e8f0;
+  --mk-line-strong: #cbd5e1;
+  --mk-surface: #ffffff;
+  --mk-bg: #f8fafc;
+  --mk-emerald-600: #059669;
+  --mk-amber-600: #d97706;
+  --mk-rose-600: #e11d48;
 }
 
 /* ── Capa 2 · Semánticos ─────────────────────────────────────────────────── */
 :root {
-  --color-bg: var(--mk-slate-50);
-  --color-surface: var(--mk-white);
-  --color-ink: var(--mk-slate-900);
-  --color-muted: var(--mk-slate-500);
-  --color-border: var(--mk-slate-200);
-  --color-primary: var(--mk-indigo-600);
-  --color-primary-strong: var(--mk-indigo-700);
-  --color-accent: var(--mk-violet-600);
-  --color-success: #059669;
-  --color-warning: #d97706;
-  --color-danger: #e11d48;
-  --color-ring: var(--mk-indigo-500);
-  --gradient-brand: linear-gradient(120deg, var(--mk-indigo-600), var(--mk-violet-600) 55%, var(--mk-fuchsia-500));
-  --radius-card: 1rem;
-  --radius-pill: 9999px;
+  --color-bg: var(--mk-bg);
+  --color-surface: var(--mk-surface);
+  --color-ink: var(--mk-ink);
+  --color-muted: var(--mk-muted);
+  --color-border: var(--mk-line);
+  --color-primary: var(--mk-brand-600);
+  --color-primary-hover: var(--mk-brand-700);
+  --color-success: var(--mk-emerald-600);
+  --color-warning: var(--mk-amber-600);
+  --color-danger: var(--mk-rose-600);
+  --color-ring: var(--mk-brand-500);
+  /* Sombra de dos partes: contacto cercano + ambiente difuso (depth.md) */
+  --shadow-xs: 0 1px 2px rgb(15 23 42 / 0.05);
+  --shadow-sm2: 0 1px 2px rgb(15 23 42 / 0.04), 0 4px 12px -4px rgb(15 23 42 / 0.08);
+  --shadow-md2: 0 2px 4px rgb(15 23 42 / 0.04), 0 12px 28px -8px rgb(15 23 42 / 0.14);
 }
 
 /* ── Base ────────────────────────────────────────────────────────────────── */
@@ -56,19 +59,17 @@ html {
 }
 
 ::selection {
-  background: rgb(99 102 241 / 0.25);
+  background: rgb(99 102 241 / 0.18);
 }
 
-/* Scrollbar sutil (estética Spartan/shadcn) */
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgb(148 163 184 / 0.5) transparent;
+  scrollbar-color: rgb(148 163 184 / 0.45) transparent;
 }
 *::-webkit-scrollbar { width: 8px; height: 8px; }
-*::-webkit-scrollbar-thumb { background: rgb(148 163 184 / 0.45); border-radius: 8px; }
+*::-webkit-scrollbar-thumb { background: rgb(148 163 184 / 0.4); border-radius: 8px; }
 *::-webkit-scrollbar-track { background: transparent; }
 
-/* Foco visible consistente (a11y, skill: nunca quitar focus rings) */
 :focus-visible {
   outline: 2px solid var(--color-ring);
   outline-offset: 2px;
@@ -80,75 +81,57 @@ h1, h2, h3, .font-heading {
   letter-spacing: -0.02em;
 }
 
+/* Números alineados en tablas/KPIs (typography.md: tabular-nums) */
+.tnum { font-variant-numeric: tabular-nums; }
+
 /* ── Capa 3 · Componentes ────────────────────────────────────────────────── */
 @layer components {
-  /* Botones ------------------------------------------------------------- */
+  /* Botones — sólidos, con hover/active/focus intencionales (finishing.md) */
   .btn {
-    @apply relative inline-flex cursor-pointer select-none items-center justify-center gap-2 rounded-xl px-4 py-2.5
-           text-sm font-semibold transition-all duration-200
+    @apply relative inline-flex cursor-pointer select-none items-center justify-center gap-2 rounded-lg px-4 py-2.5
+           text-sm font-semibold transition-colors duration-150
            focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2
-           active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50;
+           active:translate-y-px disabled:pointer-events-none disabled:opacity-50;
   }
-  /* CTA principal con barrido de brillo (idioma uiverse.io: "shine sweep") */
   .btn-primary {
-    @apply btn overflow-hidden bg-gradient-to-r from-brand-600 via-violet-600 to-brand-600 text-white
-           bg-[length:200%_auto] shadow-lift hover:bg-right hover:shadow-glow;
-    transition: background-position 0.45s ease, box-shadow 0.3s ease, transform 0.15s ease;
-  }
-  .btn-primary::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.35) 50%, transparent 70%);
-    transform: translateX(-120%);
-    pointer-events: none;
-  }
-  .btn-primary:hover::after {
-    animation: mk-shine 0.9s ease forwards;
+    @apply btn bg-brand-600 text-white shadow-[var(--shadow-xs)] hover:bg-brand-700;
   }
   .btn-secondary {
-    @apply btn border border-slate-200 bg-white text-slate-700 shadow-sm
-           hover:-translate-y-0.5 hover:border-brand-200 hover:text-brand-700 hover:shadow-soft;
+    @apply btn border border-slate-200 bg-white text-slate-700 shadow-[var(--shadow-xs)]
+           hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900;
   }
   .btn-ghost {
     @apply btn text-slate-600 hover:bg-slate-100 hover:text-slate-900;
   }
   .btn-dark {
-    @apply btn bg-slate-900 text-white shadow-soft hover:bg-slate-800;
+    @apply btn bg-slate-900 text-white shadow-[var(--shadow-xs)] hover:bg-slate-800;
   }
   .btn-danger {
     @apply btn bg-rose-600 text-white hover:bg-rose-700;
   }
-  .btn-sm { @apply px-3 py-1.5 text-xs rounded-lg; }
-  .btn-lg { @apply px-6 py-3 text-base rounded-xl; }
+  .btn-sm { @apply px-3 py-1.5 text-xs; }
+  .btn-lg { @apply px-5 py-3 text-[15px]; }
 
-  /* Superficies ---------------------------------------------------------- */
+  /* Superficies — hairline border + valor, sin sombras por defecto */
   .card {
-    @apply rounded-2xl border border-slate-200/80 bg-white shadow-soft;
+    @apply rounded-xl border border-slate-200 bg-white;
   }
-  /* Hover "vivo" de tarjeta de catálogo (idioma HyperUI/Flowbite) */
-  .card-interactive {
-    @apply card transition-all duration-300 hover:-translate-y-1 hover:border-brand-200 hover:shadow-lift;
-  }
-  /* Liquid glass (skill ui-ux-pro-max: estilo "Liquid Glass", uso moderado) */
-  .glass {
-    @apply border border-white/50 bg-white/70 shadow-glass backdrop-blur-xl;
-  }
-  .glass-dark {
-    @apply border border-white/10 bg-white/5 shadow-glass backdrop-blur-xl;
+  .card-hover {
+    @apply card transition-[border-color,box-shadow,transform] duration-200
+           hover:-translate-y-px hover:border-slate-300 hover:shadow-[var(--shadow-md2)];
   }
 
-  /* Formulario ------------------------------------------------------------ */
+  /* Formulario */
   .input {
-    @apply w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900
-           shadow-inner-soft transition placeholder:text-slate-400
-           focus:border-brand-400 focus:outline-none focus:ring-4 focus:ring-brand-500/15;
+    @apply w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900
+           transition-shadow placeholder:text-slate-400
+           focus:border-brand-500 focus:outline-none focus:ring-[3px] focus:ring-brand-500/20;
   }
   .label {
     @apply mb-1.5 block text-sm font-medium text-slate-700;
   }
 
-  /* Chips / badges ---------------------------------------------------------- */
+  /* Chips / badges — tintes serenos, anillo interior, sin degradados */
   .badge {
     @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold;
   }
@@ -157,85 +140,65 @@ h1, h2, h3, .font-heading {
   .badge-slate  { @apply badge bg-slate-100 text-slate-600 ring-1 ring-inset ring-slate-500/10; }
   .badge-brand  { @apply badge bg-brand-50 text-brand-700 ring-1 ring-inset ring-brand-600/15; }
   .badge-violet { @apply badge bg-violet-50 text-violet-700 ring-1 ring-inset ring-violet-600/15; }
+
+  /* Filtros tipo pill — activo = relleno sólido, no degradado */
   .chip {
     @apply inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-slate-200 bg-white
-           px-3.5 py-1.5 text-sm font-medium text-slate-600 transition-all duration-200
-           hover:-translate-y-0.5 hover:border-brand-300 hover:text-brand-700 hover:shadow-soft;
+           px-3.5 py-1.5 text-sm font-medium text-slate-600 transition-colors duration-150
+           hover:border-slate-300 hover:text-slate-900;
   }
   .chip-active {
-    @apply border-transparent bg-gradient-to-r from-brand-600 to-violet-600 text-white shadow-glow;
+    @apply border-slate-900 bg-slate-900 text-white hover:text-white;
   }
 
-  /* Texto decorativo --------------------------------------------------------- */
-  .text-gradient {
-    @apply bg-gradient-to-r from-brand-600 via-violet-600 to-fuchsia-500 bg-clip-text text-transparent;
-  }
+  /* Eyebrow: texto discreto, no píldora (jerarquía por peso/color) */
   .eyebrow {
-    @apply inline-flex items-center gap-2 rounded-full border border-brand-200/60 bg-brand-50/70
-           px-3.5 py-1 text-xs font-bold uppercase tracking-[0.14em] text-brand-700;
+    @apply text-xs font-bold uppercase tracking-[0.12em] text-brand-700;
+  }
+  .eyebrow-muted {
+    @apply text-xs font-bold uppercase tracking-[0.12em] text-slate-400;
   }
 
-  /* Skeleton shimmer (idioma HyperUI; reserva espacio → CLS < 0.1) ------------ */
+  /* Enlaces de navegación con acento activo (finishing.md: accent border) */
+  .nav-link {
+    @apply flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-slate-600
+           transition-colors duration-150 hover:bg-slate-100 hover:text-slate-900;
+  }
+  .nav-link.nav-active {
+    @apply bg-brand-50/70 text-brand-700;
+    box-shadow: inset 2px 0 0 0 var(--mk-brand-600);
+  }
+
+  /* Texto con acento de marca (sólido, legible) */
+  .text-accent { @apply text-brand-700; }
+
+  /* Skeleton shimmer — estado de carga obligatorio (hidden-ui.md) */
   .skeleton {
-    @apply rounded-xl bg-slate-100;
-    background-image: linear-gradient(90deg, rgb(241 245 249) 0px, rgb(226 232 240 / 0.9) 40%, rgb(241 245 249) 80%);
+    @apply rounded-md bg-slate-100;
+    background-image: linear-gradient(90deg, rgb(241 245 249) 0px, rgb(226 232 240 / 0.85) 40%, rgb(241 245 249) 80%);
     background-size: 400px 100%;
     animation: mk-shimmer 1.4s linear infinite;
   }
 
-  /* Scroll reveal (se activa con la directiva appReveal) ---------------------- */
+  /* Scroll reveal — movimiento funcional, sutil */
   .reveal {
     opacity: 0;
-    transform: translateY(22px);
-    transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    transform: translateY(14px);
+    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
     transition-delay: var(--reveal-delay, 0ms);
   }
   .reveal-visible {
     opacity: 1;
     transform: none;
   }
-
-  /* Borde con degradado animado (idioma uiverse: gradient border) -------------- */
-  .gradient-border {
-    position: relative;
-    background: var(--color-surface);
-    border-radius: 1rem;
-  }
-  .gradient-border::before {
-    content: '';
-    position: absolute;
-    inset: -1.5px;
-    border-radius: inherit;
-    background: linear-gradient(120deg, var(--mk-indigo-500), var(--mk-violet-600), var(--mk-fuchsia-500), var(--mk-sky-500));
-    background-size: 300% 300%;
-    z-index: -1;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    animation: mk-gradient-x 6s ease infinite;
-  }
-  .gradient-border:hover::before { opacity: 1; }
-
-  /* Marquee infinito (banda de tecnologías) ----------------------------------- */
-  .marquee-mask {
-    -webkit-mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
-    mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
-  }
 }
 
-/* ── Keyframes globales ───────────────────────────────────────────────────── */
-@keyframes mk-shine {
-  to { transform: translateX(120%); }
-}
 @keyframes mk-shimmer {
   0% { background-position: -400px 0; }
   100% { background-position: 400px 0; }
 }
-@keyframes mk-gradient-x {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
 
-/* ── Accesibilidad: movimiento reducido anula animaciones (skill checklist) ── */
+/* Accesibilidad: movimiento reducido */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -246,25 +209,25 @@ h1, h2, h3, .font-heading {
   .reveal { opacity: 1 !important; transform: none !important; }
 }
 
-/* ── Ajustes del reproductor video.js ─────────────────────────────────────── */
+/* ── Reproductor video.js ─────────────────────────────────────────────────── */
 .video-js {
-  @apply rounded-2xl;
+  @apply rounded-xl;
 }
 .video-js .vjs-big-play-button {
-  @apply border-0 bg-brand-600/90 leading-[2.4em] transition hover:bg-brand-500 hover:scale-105;
+  @apply border-0 bg-brand-600 leading-[2.4em] transition hover:bg-brand-700;
   width: 2.4em;
   height: 2.4em;
   left: 50%;
   top: 50%;
   border-radius: 9999px;
   transform: translate(-50%, -50%);
-  box-shadow: 0 8px 32px rgb(79 70 229 / 0.5);
+  box-shadow: 0 2px 4px rgb(15 23 42 / 0.2), 0 12px 28px -8px rgb(15 23 42 / 0.35);
 }
 .video-js .vjs-control-bar {
   @apply bg-slate-900/85;
 }
 .video-js .vjs-play-progress { @apply bg-brand-500; }
-.video-js .vjs-volume-level { @apply bg-violet-400; }
+.video-js .vjs-volume-level { @apply bg-brand-400; }
 
 /* Marca de agua disuasoria anti-piratería (spec §6.4) */
 .manako-watermark {

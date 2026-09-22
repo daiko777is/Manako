@@ -21,7 +21,7 @@ import { RevealDirective } from '../../shared/components/reveal.directive';
     <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6">
       <header class="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p class="eyebrow"><app-icon name="presentation" [size]="13" /> Panel de instructor</p>
+          <p class="eyebrow">Panel de instructor</p>
           <h1 class="mt-3 font-heading text-3xl font-bold text-slate-900">Tus cursos</h1>
           <p class="mt-1.5 text-slate-500">Gestiona tu contenido, publica y sigue tus ingresos.</p>
         </div>
@@ -100,7 +100,7 @@ import { RevealDirective } from '../../shared/components/reveal.directive';
             </article>
           } @empty {
             <div class="card p-16 text-center">
-              <span class="mx-auto flex h-20 w-20 animate-float items-center justify-center rounded-3xl bg-gradient-to-br from-brand-50 to-violet-50 text-brand-500">
+              <span class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
                 <app-icon name="film" [size]="36" />
               </span>
               <h2 class="mt-6 font-heading text-xl font-bold text-slate-900">Crea tu primer curso</h2>

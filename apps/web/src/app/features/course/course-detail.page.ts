@@ -24,8 +24,7 @@ import { RevealDirective } from '../../shared/components/reveal.directive';
           <img [src]="c.thumbnailUrl" alt="" aria-hidden="true"
                class="absolute inset-0 h-full w-full scale-110 object-cover opacity-25 blur-2xl" />
         }
-        <div class="absolute inset-0 bg-mesh-hero opacity-70" aria-hidden="true"></div>
-        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent" aria-hidden="true"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-slate-950/40" aria-hidden="true"></div>
 
         <div class="relative mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_380px]">
           <div>
@@ -42,7 +41,7 @@ import { RevealDirective } from '../../shared/components/reveal.directive';
             </nav>
 
             <div class="flex flex-wrap items-center gap-2">
-              <span class="rounded-full bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-brand-200 backdrop-blur">
+              <span class="rounded-md bg-white/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-slate-200">
                 {{ levelLabel(c.level) }}
               </span>
               @if (c.priceCents === 0) {
@@ -68,7 +67,7 @@ import { RevealDirective } from '../../shared/components/reveal.directive';
               <span class="flex items-center gap-1.5"><app-icon name="users" [size]="15" /> {{ c.totalEnrollments }} estudiantes</span>
               @if (c.instructor) {
                 <span class="flex items-center gap-2">
-                  <span class="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-violet-600 text-[10px] font-bold text-white">
+                  <span class="flex h-7 w-7 items-center justify-center rounded-full bg-white/15 text-[10px] font-bold text-white">
                     {{ (c.instructor.fullName ?? '?').slice(0, 2).toUpperCase() }}
                   </span>
                   {{ c.instructor.fullName }}
@@ -77,8 +76,8 @@ import { RevealDirective } from '../../shared/components/reveal.directive';
             </div>
 
             @if (c.viewer?.enrolled) {
-              <div class="glass-dark mt-8 inline-flex max-w-md items-center gap-4 rounded-2xl p-4">
-                <app-progress-ring [percent]="c.viewer?.progressPercent ?? 0" [size]="56" trackColor="rgba(255,255,255,0.12)" valueClass="!text-white" />
+              <div class="mt-8 inline-flex max-w-md items-center gap-4 rounded-xl border border-white/10 bg-white/5 p-4">
+                <app-progress-ring [percent]="c.viewer?.progressPercent ?? 0" [size]="56" trackColor="rgba(255,255,255,0.14)" color="#818cf8" valueClass="!text-white" />
                 <div>
                   <p class="text-sm font-semibold text-white">
                     {{ (c.viewer?.progressPercent ?? 0) === 100 ? '¡Curso completado! 🎓' : 'Continúa donde lo dejaste' }}
@@ -91,19 +90,19 @@ import { RevealDirective } from '../../shared/components/reveal.directive';
             }
           </div>
 
-          <!-- ═══════ Tarjeta de compra (glass, sticky) ═══════ -->
+          <!-- ═══════ Tarjeta de compra (sticky) ═══════ -->
           <aside class="h-fit lg:sticky lg:top-24">
-            <div class="glass-dark overflow-hidden rounded-3xl p-2">
-              <div class="relative flex aspect-video items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-brand-600 via-violet-600 to-fuchsia-600">
+            <div class="overflow-hidden rounded-2xl border border-white/10 bg-slate-900 p-2 shadow-[var(--shadow-md2)]">
+              <div class="relative flex aspect-video items-center justify-center overflow-hidden rounded-xl bg-slate-800 text-slate-500">
                 @if (c.thumbnailUrl) {
                   <img [src]="c.thumbnailUrl" [alt]="'Portada de ' + c.title" class="h-full w-full object-cover" />
                 } @else {
                   <div class="absolute inset-0 bg-grid-fade bg-grid opacity-30" aria-hidden="true"></div>
                   <app-icon name="film" [size]="44" />
                 }
-                <span class="absolute inset-0 flex items-center justify-center bg-slate-950/30 opacity-0 transition-opacity duration-300 hover:opacity-100">
-                  <span class="flex h-14 w-14 items-center justify-center rounded-full bg-white/95 text-brand-700 shadow-glow">
-                    <app-icon name="play" [size]="24" />
+                <span class="absolute inset-0 flex items-center justify-center bg-slate-950/40 opacity-0 transition-opacity duration-200 hover:opacity-100">
+                  <span class="flex h-12 w-12 items-center justify-center rounded-full bg-white text-brand-700">
+                    <app-icon name="play" [size]="20" />
                   </span>
                 </span>
               </div>
@@ -181,15 +180,15 @@ import { RevealDirective } from '../../shared/components/reveal.directive';
 
             <div class="mt-5 space-y-3">
               @for (mod of c.modules; track mod.id) {
-                <div class="card overflow-hidden transition-shadow duration-300 hover:shadow-lift">
+                <div class="card overflow-hidden">
                   <button
                     type="button"
-                    class="flex w-full items-center justify-between gap-3 bg-gradient-to-r from-slate-50 to-white px-5 py-4 text-left transition hover:from-brand-50/60"
+                    class="flex w-full items-center justify-between gap-3 bg-white px-5 py-4 text-left transition-colors hover:bg-slate-50"
                     (click)="toggleModule(mod.id)"
                     [attr.aria-expanded]="expanded()[mod.id] ?? false"
                   >
                     <span class="flex items-center gap-3">
-                      <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-violet-600 text-xs font-bold text-white shadow-glow">
+                      <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 text-xs font-bold text-white tnum">
                         {{ mod.orderIndex + 1 }}
                       </span>
                       <span>
@@ -245,9 +244,9 @@ import { RevealDirective } from '../../shared/components/reveal.directive';
         <aside class="order-1 lg:order-2" appReveal>
           @if (c.instructor) {
             <div class="card overflow-hidden lg:sticky lg:top-24">
-              <div class="h-20 bg-gradient-to-r from-brand-600 via-violet-600 to-fuchsia-500"></div>
-              <div class="-mt-9 px-6 pb-6">
-                <span class="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 to-violet-600 font-heading text-xl font-bold text-white shadow-glow ring-4 ring-white">
+              <div class="h-1.5 bg-brand-600"></div>
+              <div class="-mt-8 px-6 pb-6">
+                <span class="flex h-14 w-14 items-center justify-center rounded-xl bg-slate-900 font-heading text-lg font-bold text-white ring-4 ring-white">
                   {{ (c.instructor.fullName ?? '?').slice(0, 2).toUpperCase() }}
                 </span>
                 <h3 class="mt-3 font-heading text-lg font-bold text-slate-900">{{ c.instructor.fullName }}</h3>
@@ -270,7 +269,7 @@ import { RevealDirective } from '../../shared/components/reveal.directive';
       </div>
     } @else if (notFound()) {
       <div class="mx-auto max-w-3xl px-4 py-28 text-center">
-        <span class="mx-auto flex h-20 w-20 animate-float items-center justify-center rounded-3xl bg-gradient-to-br from-brand-50 to-violet-50 text-brand-500">
+        <span class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
           <app-icon name="search" [size]="34" />
         </span>
         <h1 class="mt-6 font-heading text-3xl font-bold text-slate-900">Curso no encontrado</h1>

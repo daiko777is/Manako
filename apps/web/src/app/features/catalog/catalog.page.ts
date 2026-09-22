@@ -36,28 +36,26 @@ const SORTS: { value: CourseSort; label: string }[] = [
   imports: [RouterLink, CourseCardComponent, IconComponent, ReactiveFormsModule, RevealDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <!-- Header con gradiente -->
-    <section class="relative -mt-16 overflow-hidden bg-slate-950 pb-14 pt-28">
-      <div class="absolute inset-0 bg-mesh-hero opacity-70" aria-hidden="true"></div>
-      <div class="absolute inset-0 bg-grid-fade bg-grid opacity-30" aria-hidden="true"></div>
-      <div class="relative mx-auto max-w-7xl px-4 sm:px-6">
-        <h1 class="animate-fade-up font-heading text-3xl font-bold text-white sm:text-4xl">
-          Encuentra tu próximo <span class="bg-gradient-to-r from-brand-300 to-fuchsia-300 bg-clip-text text-transparent">curso</span>
+    <!-- Header claro editorial -->
+    <section class="border-b border-slate-200 bg-white">
+      <div class="mx-auto max-w-7xl px-4 pb-10 pt-12 sm:px-6">
+        <h1 class="font-heading text-3xl font-bold text-slate-900 sm:text-4xl">
+          Catálogo de cursos
         </h1>
-        <p class="mt-2 animate-fade-up text-slate-300 [animation-delay:80ms]">
+        <p class="mt-2 text-slate-500">
           Filtra por categoría, nivel y precio. Las lecciones de muestra son gratis.
         </p>
 
         <!-- Buscador -->
-        <div class="relative mt-7 max-w-xl animate-fade-up [animation-delay:160ms]">
-          <span class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-            <app-icon name="search" [size]="18" />
+        <div class="relative mt-6 max-w-xl">
+          <span class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+            <app-icon name="search" [size]="17" />
           </span>
           <input
             id="search"
             type="search"
-            class="input !rounded-2xl !border-white/20 !bg-white/95 !py-3.5 !pl-11 !shadow-glass backdrop-blur"
-            placeholder="Buscar: Angular, NestJS, señales, diseño…"
+            class="input !pl-10"
+            placeholder="Buscar: Angular, NestJS, signals, diseño…"
             aria-label="Buscar cursos"
             [formControl]="searchControl"
           />
@@ -137,7 +135,7 @@ const SORTS: { value: CourseSort; label: string }[] = [
               @for (s of sorts; track s.value) {
                 <button type="button"
                         class="rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all duration-200"
-                        [class]="filters().sort === s.value ? 'bg-gradient-to-r from-brand-600 to-violet-600 text-white shadow-sm' : 'text-slate-500 hover:text-slate-800'"
+                        [class]="filters().sort === s.value ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'"
                         (click)="patch({ sort: s.value })">
                   {{ s.label }}
                 </button>
@@ -165,7 +163,7 @@ const SORTS: { value: CourseSort; label: string }[] = [
                 </div>
               } @empty {
                 <div class="card col-span-full p-14 text-center" appReveal>
-                  <span class="mx-auto flex h-16 w-16 animate-float items-center justify-center rounded-3xl bg-gradient-to-br from-brand-50 to-violet-50 text-brand-500">
+                  <span class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
                     <app-icon name="search" [size]="28" />
                   </span>
                   <h3 class="mt-5 font-heading text-lg font-bold text-slate-900">Sin resultados con esos filtros</h3>

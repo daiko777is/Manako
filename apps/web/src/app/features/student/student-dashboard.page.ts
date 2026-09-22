@@ -15,19 +15,14 @@ import { levelLabel } from '../../shared/format';
   imports: [RouterLink, ProgressRingComponent, IconComponent, RevealDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <!-- Header con wash de gradiente -->
-    <section class="relative -mt-16 overflow-hidden bg-slate-950 pb-12 pt-28">
-      <div class="absolute inset-0 bg-mesh-hero opacity-70" aria-hidden="true"></div>
-      <div class="absolute inset-0 bg-grid-fade bg-grid opacity-30" aria-hidden="true"></div>
-      <div class="relative mx-auto flex max-w-7xl flex-wrap items-end justify-between gap-4 px-4 sm:px-6">
+    <!-- Header claro -->
+    <section class="border-b border-slate-200 bg-white">
+      <div class="mx-auto flex max-w-7xl flex-wrap items-end justify-between gap-4 px-4 pb-10 pt-12 sm:px-6">
         <div>
-          <h1 class="animate-fade-up font-heading text-3xl font-bold text-white sm:text-4xl">
+          <h1 class="font-heading text-3xl font-bold text-slate-900 sm:text-4xl">
             Hola, {{ firstName() }}
-            <span class="ml-1 inline-block animate-wiggle origin-bottom-right text-brand-300 align-middle">
-              <app-icon name="sparkles" [size]="24" />
-            </span>
           </h1>
-          <p class="mt-2 animate-fade-up text-slate-300 [animation-delay:80ms]">
+          <p class="mt-2 text-slate-500">
             @if (enrollments().length > 0) {
               Tienes {{ enrollments().length }} curso(s) en marcha — continúa donde lo dejaste.
             } @else {
@@ -35,7 +30,7 @@ import { levelLabel } from '../../shared/format';
             }
           </p>
         </div>
-        <a routerLink="/cursos" class="btn-primary animate-fade-up [animation-delay:160ms]">
+        <a routerLink="/cursos" class="btn-secondary">
           <app-icon name="search" [size]="16" /> Explorar catálogo
         </a>
       </div>
@@ -45,29 +40,29 @@ import { levelLabel } from '../../shared/format';
       <!-- Tarjetas de resumen -->
       <div class="mb-8 grid gap-4 sm:grid-cols-3">
         <div class="card flex items-center gap-4 p-5" appReveal>
-          <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 to-violet-600 text-white shadow-glow">
+          <span class="flex h-11 w-11 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
             <app-icon name="book" [size]="22" />
           </span>
           <div>
-            <p class="font-heading text-2xl font-bold text-slate-900">{{ enrollments().length }}</p>
+            <p class="font-heading text-2xl font-bold text-slate-900 tnum">{{ enrollments().length }}</p>
             <p class="text-xs text-slate-500">Cursos inscritos</p>
           </div>
         </div>
         <div class="card flex items-center gap-4 p-5" appReveal [appRevealDelay]="80">
-          <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-glow">
+          <span class="flex h-11 w-11 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
             <app-icon name="check-circle" [size]="22" />
           </span>
           <div>
-            <p class="font-heading text-2xl font-bold text-slate-900">{{ completedLessons() }}</p>
+            <p class="font-heading text-2xl font-bold text-slate-900 tnum">{{ completedLessons() }}</p>
             <p class="text-xs text-slate-500">Lecciones completadas</p>
           </div>
         </div>
         <div class="card flex items-center gap-4 p-5" appReveal [appRevealDelay]="160">
-          <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-glow">
+          <span class="flex h-11 w-11 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
             <app-icon name="fire" [size]="22" />
           </span>
           <div>
-            <p class="font-heading text-2xl font-bold text-slate-900">{{ inProgress() }}</p>
+            <p class="font-heading text-2xl font-bold text-slate-900 tnum">{{ inProgress() }}</p>
             <p class="text-xs text-slate-500">En progreso ahora</p>
           </div>
         </div>
@@ -91,9 +86,9 @@ import { levelLabel } from '../../shared/format';
       } @else {
         <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           @for (enrollment of enrollments(); track enrollment.id; let i = $index) {
-            <article class="card-interactive group flex flex-col overflow-hidden" appReveal [appRevealDelay]="(i % 3) * 80">
+            <article class="card-hover group flex flex-col overflow-hidden" appReveal [appRevealDelay]="(i % 3) * 80">
               <div class="flex items-start gap-4 p-5">
-                <div class="relative h-20 w-28 shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-brand-600 to-violet-700">
+                <div class="relative h-20 w-28 shrink-0 overflow-hidden rounded-lg bg-slate-900">
                   @if (enrollment.course.thumbnailUrl) {
                     <img
                       [src]="enrollment.course.thumbnailUrl"
@@ -134,7 +129,7 @@ import { levelLabel } from '../../shared/format';
             </article>
           } @empty {
             <div class="card col-span-full p-16 text-center" appReveal>
-              <span class="mx-auto flex h-20 w-20 animate-float items-center justify-center rounded-3xl bg-gradient-to-br from-brand-50 to-violet-50 text-brand-500">
+              <span class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
                 <app-icon name="book" [size]="36" />
               </span>
               <h2 class="mt-6 font-heading text-xl font-bold text-slate-900">Todavía no tienes cursos</h2>

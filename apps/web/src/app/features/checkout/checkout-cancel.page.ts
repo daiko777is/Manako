@@ -10,8 +10,8 @@ import { IconComponent } from '../../shared/components/icon.component';
   template: `
     <div class="flex min-h-[70vh] items-center justify-center px-4 py-24">
       <div class="card w-full max-w-lg animate-pop-in p-10 text-center">
-        <span class="mx-auto flex h-20 w-20 animate-float items-center justify-center rounded-3xl bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-glow">
-          <app-icon name="credit-card" [size]="36" />
+        <span class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-50 text-amber-600">
+          <app-icon name="credit-card" [size]="30" />
         </span>
         <h1 class="mt-6 font-heading text-3xl font-bold text-slate-900">Pago cancelado</h1>
         <p class="mt-3 leading-relaxed text-slate-500">

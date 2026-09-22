@@ -17,15 +17,11 @@ import { IconComponent } from '../../shared/components/icon.component';
   imports: [RouterLink, IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="relative flex min-h-[70vh] items-center justify-center overflow-hidden px-4 py-24">
-      <div class="absolute inset-0 bg-mesh-hero opacity-30" aria-hidden="true"></div>
-      <div class="absolute left-1/4 top-10 h-72 w-72 animate-blob rounded-full bg-emerald-400/20 blur-3xl" aria-hidden="true"></div>
-      <div class="absolute bottom-0 right-1/4 h-64 w-64 animate-blob rounded-full bg-brand-500/20 blur-3xl [animation-delay:-5s]" aria-hidden="true"></div>
-
-      <div class="card relative w-full max-w-lg animate-pop-in p-10 text-center">
+    <div class="flex min-h-[70vh] items-center justify-center px-4 py-24">
+      <div class="card w-full max-w-lg p-10 text-center">
         @if (enrollment(); as e) {
-          <span class="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-emerald-400 to-teal-600 text-white shadow-glow">
-            <app-icon name="check" [size]="38" />
+          <span class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
+            <app-icon name="check" [size]="30" />
           </span>
           <h1 class="mt-6 font-heading text-3xl font-bold text-slate-900">¡Pago confirmado!</h1>
           <p class="mt-3 text-slate-600">
@@ -34,7 +30,7 @@ import { IconComponent } from '../../shared/components/icon.component';
           </p>
           <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <a [routerLink]="['/aprender', e.courseId]" class="btn-primary btn-lg">
-              <app-icon name="play" [size]="17" /> Empezar ahora
+              <app-icon name="play" [size]="16" /> Empezar ahora
             </a>
             <a routerLink="/mi-aprendizaje" class="btn-secondary btn-lg">Mi aprendizaje</a>
           </div>
@@ -42,8 +38,8 @@ import { IconComponent } from '../../shared/components/icon.component';
             Recibirás el recibo de Stripe por email. Puedes pedir factura desde allí.
           </p>
         } @else {
-          <span class="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-brand-500 to-violet-600 text-white shadow-glow">
-            <span class="h-8 w-8 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+          <span class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-50 text-brand-600">
+            <span class="h-7 w-7 animate-spin rounded-full border-2 border-brand-600 border-t-transparent"></span>
           </span>
           <h1 class="mt-6 font-heading text-2xl font-bold text-slate-900">Confirmando tu pago…</h1>
           <p class="mt-3 text-sm leading-relaxed text-slate-500">
