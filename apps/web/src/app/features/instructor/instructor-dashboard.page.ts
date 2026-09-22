@@ -9,20 +9,25 @@ import { CatalogService } from '../../core/catalog/catalog.service';
 import { ToastService } from '../../core/toast/toast.service';
 import { AuthService } from '../../core/auth/auth.service';
 import { formatDate, formatDuration, formatMoney, levelLabel, statusLabel } from '../../shared/format';
+import { IconComponent } from '../../shared/components/icon.component';
+import { RevealDirective } from '../../shared/components/reveal.directive';
 
 @Component({
   selector: 'app-instructor-dashboard',
   standalone: true,
-  imports: [RouterLink, ReactiveFormsModule],
+  imports: [RouterLink, ReactiveFormsModule, IconComponent, RevealDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6">
       <header class="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 class="text-3xl font-bold text-slate-900">Panel de instructor</h1>
-          <p class="mt-1 text-slate-500">Gestiona tus cursos, publica contenido y sigue tus ingresos.</p>
+          <p class="eyebrow"><app-icon name="presentation" [size]="13" /> Panel de instructor</p>
+          <h1 class="mt-3 font-heading text-3xl font-bold text-slate-900">Tus cursos</h1>
+          <p class="mt-1.5 text-slate-500">Gestiona tu contenido, publica y sigue tus ingresos.</p>
         </div>
-        <button type="button" class="btn-primary" (click)="showCreate.set(true)">+ Nuevo curso</button>
+        <button type="button" class="btn-primary" (click)="showCreate.set(true)">
+          <app-icon name="plus" [size]="16" /> Nuevo curso
+        </button>
       </header>
 
       @if (courses(); as list) {
@@ -77,27 +82,33 @@ import { formatDate, formatDuration, formatMoney, levelLabel, statusLabel } from
               </div>
 
               <div class="mt-4 flex flex-wrap gap-2 border-t border-slate-100 pt-4">
-                <a [routerLink]="['/instructor/cursos', course.id]" class="btn-secondary btn-sm">✏️ Editar currículo</a>
+                <a [routerLink]="['/instructor/cursos', course.id]" class="btn-secondary btn-sm">
+                  <app-icon name="pencil" [size]="14" /> Editar currículo
+                </a>
                 <button type="button" class="btn-secondary btn-sm" (click)="loadAnalytics(course.id)">
-                  📊 Analíticas
+                  <app-icon name="chart-bar" [size]="14" /> Analíticas
                 </button>
-                <a [routerLink]="['/cursos', course.slug]" class="btn-ghost btn-sm" target="_blank">👁 Ver como alumno</a>
+                <a [routerLink]="['/cursos', course.slug]" class="btn-ghost btn-sm" target="_blank">
+                  <app-icon name="eye" [size]="14" /> Ver como alumno
+                </a>
                 @if (course.status !== 'archived') {
                   <button type="button" class="btn-ghost btn-sm text-rose-600 hover:bg-rose-50" (click)="archive(course.id)">
-                    Archivar
+                    <app-icon name="lock" [size]="14" /> Archivar
                   </button>
                 }
               </div>
             </article>
           } @empty {
-            <div class="card p-14 text-center">
-              <p class="text-5xl" aria-hidden="true">🎬</p>
-              <h2 class="mt-4 text-lg font-semibold text-slate-900">Crea tu primer curso</h2>
-              <p class="mt-1 text-sm text-slate-500">
+            <div class="card p-16 text-center">
+              <span class="mx-auto flex h-20 w-20 animate-float items-center justify-center rounded-3xl bg-gradient-to-br from-brand-50 to-violet-50 text-brand-500">
+                <app-icon name="film" [size]="36" />
+              </span>
+              <h2 class="mt-6 font-heading text-xl font-bold text-slate-900">Crea tu primer curso</h2>
+              <p class="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-slate-500">
                 Sube videos organizados en módulos, publica y empieza a recibir alumnos.
               </p>
-              <button type="button" class="btn-primary mt-6" (click)="showCreate.set(true)">
-                + Nuevo curso
+              <button type="button" class="btn-primary mt-7" (click)="showCreate.set(true)">
+                <app-icon name="plus" [size]="16" /> Nuevo curso
               </button>
             </div>
           }

@@ -4,41 +4,57 @@ import { AuthService } from '../../core/auth/auth.service';
 import { EnrollmentsService } from '../../core/enrollments/enrollments.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import type { EnrollmentSummary } from '@manako/shared';
+import { IconComponent } from '../../shared/components/icon.component';
 
 /**
- * Landing de retorno de Stripe Checkout. Importante (spec §3.6): el acceso
- * real lo concede el webhook de Stripe en el backend; esta página solo
- * refleja el estado consultando las inscripciones del usuario (con reintentos
- * porque el webhook puede tardar unos segundos).
+ * Landing de retorno de Stripe Checkout. El acceso real lo concede el
+ * webhook en el backend (spec §3.6); esta página refleja el estado
+ * consultando inscripciones con reintentos (backoff).
  */
 @Component({
   selector: 'app-checkout-success',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="mx-auto max-w-xl px-4 py-24 text-center">
-      @if (enrollment(); as e) {
-        <p class="text-6xl" aria-hidden="true">🎉</p>
-        <h1 class="mt-4 text-3xl font-bold text-slate-900">¡Pago confirmado!</h1>
-        <p class="mt-2 text-slate-600">
-          Ya estás inscrito en <strong>{{ e.course.title }}</strong>.
-        </p>
-        <div class="mt-8 flex justify-center gap-3">
-          <a [routerLink]="['/aprender', e.courseId]" class="btn-primary">Empezar ahora →</a>
-          <a routerLink="/mi-aprendizaje" class="btn-secondary">Mi aprendizaje</a>
-        </div>
-      } @else {
-        <p class="text-5xl" aria-hidden="true">⏳</p>
-        <h1 class="mt-4 text-2xl font-bold text-slate-900">Confirmando tu pago…</h1>
-        <p class="mt-2 text-slate-600">
-          Estamos esperando la confirmación de Stripe (unos segundos). Recibirás tu acceso
-          automáticamente; también te avisaremos por email.
-        </p>
-        <div class="mt-8 flex justify-center gap-3">
-          <a routerLink="/mi-aprendizaje" class="btn-secondary">Ir a mi aprendizaje</a>
-        </div>
-      }
+    <div class="relative flex min-h-[70vh] items-center justify-center overflow-hidden px-4 py-24">
+      <div class="absolute inset-0 bg-mesh-hero opacity-30" aria-hidden="true"></div>
+      <div class="absolute left-1/4 top-10 h-72 w-72 animate-blob rounded-full bg-emerald-400/20 blur-3xl" aria-hidden="true"></div>
+      <div class="absolute bottom-0 right-1/4 h-64 w-64 animate-blob rounded-full bg-brand-500/20 blur-3xl [animation-delay:-5s]" aria-hidden="true"></div>
+
+      <div class="card relative w-full max-w-lg animate-pop-in p-10 text-center">
+        @if (enrollment(); as e) {
+          <span class="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-emerald-400 to-teal-600 text-white shadow-glow">
+            <app-icon name="check" [size]="38" />
+          </span>
+          <h1 class="mt-6 font-heading text-3xl font-bold text-slate-900">¡Pago confirmado!</h1>
+          <p class="mt-3 text-slate-600">
+            Ya estás inscrito en
+            <strong class="font-semibold text-slate-900">{{ e.course.title }}</strong>.
+          </p>
+          <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+            <a [routerLink]="['/aprender', e.courseId]" class="btn-primary btn-lg">
+              <app-icon name="play" [size]="17" /> Empezar ahora
+            </a>
+            <a routerLink="/mi-aprendizaje" class="btn-secondary btn-lg">Mi aprendizaje</a>
+          </div>
+          <p class="mt-6 text-xs text-slate-400">
+            Recibirás el recibo de Stripe por email. Puedes pedir factura desde allí.
+          </p>
+        } @else {
+          <span class="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-brand-500 to-violet-600 text-white shadow-glow">
+            <span class="h-8 w-8 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+          </span>
+          <h1 class="mt-6 font-heading text-2xl font-bold text-slate-900">Confirmando tu pago…</h1>
+          <p class="mt-3 text-sm leading-relaxed text-slate-500">
+            Estamos esperando la confirmación de Stripe (unos segundos). Tu acceso
+            aparecerá automáticamente y te avisaremos por email.
+          </p>
+          <div class="mt-8">
+            <a routerLink="/mi-aprendizaje" class="btn-secondary">Ir a mi aprendizaje</a>
+          </div>
+        }
+      </div>
     </div>
   `,
 })
@@ -51,8 +67,6 @@ export class CheckoutSuccessPage {
 
   constructor() {
     const sessionId = this.route.snapshot.queryParamMap.get('session_id');
-    // El webhook puede ir unos segundos por delante/detrás del redirect:
-    // reintentamos hasta 5 veces con backoff.
     this.poll(0, sessionId);
   }
 
@@ -62,7 +76,6 @@ export class CheckoutSuccessPage {
       .mine()
       .pipe(takeUntilDestroyed())
       .subscribe((list) => {
-        // La inscripción más reciente suele ser la del checkout recién terminado
         const recent = list[0];
         if (recent && (!sessionId || this.isRecent(recent.enrolledAt))) {
           this.enrollment.set(recent);

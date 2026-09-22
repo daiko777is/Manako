@@ -4,77 +4,267 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Clases de utilidad del sistema de diseño Manakō ─────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════════════
+   Manakō Design System
+   Tokens en 3 capas (skill design-system: primitive → semantic → component).
+   Efectos inspirados en hyperui.dev, flowbite, uiverse.io y spartan.ng
+   (adaptados a Tailwind + Angular; ver comentarios por bloque).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Capa 1 · Primitivos ─────────────────────────────────────────────────── */
+:root {
+  --mk-indigo-500: #6366f1;
+  --mk-indigo-600: #4f46e5;
+  --mk-indigo-700: #4338ca;
+  --mk-violet-600: #7c3aed;
+  --mk-fuchsia-500: #d946ef;
+  --mk-sky-500: #0ea5e9;
+  --mk-emerald-500: #10b981;
+  --mk-amber-500: #f59e0b;
+  --mk-rose-500: #f43f5e;
+  --mk-slate-950: #020617;
+  --mk-slate-900: #0f172a;
+  --mk-slate-500: #64748b;
+  --mk-slate-200: #e2e8f0;
+  --mk-slate-100: #f1f5f9;
+  --mk-slate-50: #f8fafc;
+  --mk-white: #ffffff;
+}
+
+/* ── Capa 2 · Semánticos ─────────────────────────────────────────────────── */
+:root {
+  --color-bg: var(--mk-slate-50);
+  --color-surface: var(--mk-white);
+  --color-ink: var(--mk-slate-900);
+  --color-muted: var(--mk-slate-500);
+  --color-border: var(--mk-slate-200);
+  --color-primary: var(--mk-indigo-600);
+  --color-primary-strong: var(--mk-indigo-700);
+  --color-accent: var(--mk-violet-600);
+  --color-success: #059669;
+  --color-warning: #d97706;
+  --color-danger: #e11d48;
+  --color-ring: var(--mk-indigo-500);
+  --gradient-brand: linear-gradient(120deg, var(--mk-indigo-600), var(--mk-violet-600) 55%, var(--mk-fuchsia-500));
+  --radius-card: 1rem;
+  --radius-pill: 9999px;
+}
+
+/* ── Base ────────────────────────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+
+::selection {
+  background: rgb(99 102 241 / 0.25);
+}
+
+/* Scrollbar sutil (estética Spartan/shadcn) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(148 163 184 / 0.5) transparent;
+}
+*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar-thumb { background: rgb(148 163 184 / 0.45); border-radius: 8px; }
+*::-webkit-scrollbar-track { background: transparent; }
+
+/* Foco visible consistente (a11y, skill: nunca quitar focus rings) */
+:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+h1, h2, h3, .font-heading {
+  font-family: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* ── Capa 3 · Componentes ────────────────────────────────────────────────── */
 @layer components {
+  /* Botones ------------------------------------------------------------- */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition
-           focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2
-           disabled:cursor-not-allowed disabled:opacity-50;
+    @apply relative inline-flex cursor-pointer select-none items-center justify-center gap-2 rounded-xl px-4 py-2.5
+           text-sm font-semibold transition-all duration-200
+           focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2
+           active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50;
   }
+  /* CTA principal con barrido de brillo (idioma uiverse.io: "shine sweep") */
   .btn-primary {
-    @apply btn bg-brand-600 text-white hover:bg-brand-700 active:bg-brand-800;
+    @apply btn overflow-hidden bg-gradient-to-r from-brand-600 via-violet-600 to-brand-600 text-white
+           bg-[length:200%_auto] shadow-lift hover:bg-right hover:shadow-glow;
+    transition: background-position 0.45s ease, box-shadow 0.3s ease, transform 0.15s ease;
+  }
+  .btn-primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.35) 50%, transparent 70%);
+    transform: translateX(-120%);
+    pointer-events: none;
+  }
+  .btn-primary:hover::after {
+    animation: mk-shine 0.9s ease forwards;
   }
   .btn-secondary {
-    @apply btn border border-slate-300 bg-white text-slate-700 hover:bg-slate-50;
+    @apply btn border border-slate-200 bg-white text-slate-700 shadow-sm
+           hover:-translate-y-0.5 hover:border-brand-200 hover:text-brand-700 hover:shadow-soft;
   }
   .btn-ghost {
-    @apply btn text-slate-600 hover:bg-slate-100;
+    @apply btn text-slate-600 hover:bg-slate-100 hover:text-slate-900;
+  }
+  .btn-dark {
+    @apply btn bg-slate-900 text-white shadow-soft hover:bg-slate-800;
   }
   .btn-danger {
     @apply btn bg-rose-600 text-white hover:bg-rose-700;
   }
-  .btn-sm {
-    @apply px-3 py-1.5 text-xs;
+  .btn-sm { @apply px-3 py-1.5 text-xs rounded-lg; }
+  .btn-lg { @apply px-6 py-3 text-base rounded-xl; }
+
+  /* Superficies ---------------------------------------------------------- */
+  .card {
+    @apply rounded-2xl border border-slate-200/80 bg-white shadow-soft;
+  }
+  /* Hover "vivo" de tarjeta de catálogo (idioma HyperUI/Flowbite) */
+  .card-interactive {
+    @apply card transition-all duration-300 hover:-translate-y-1 hover:border-brand-200 hover:shadow-lift;
+  }
+  /* Liquid glass (skill ui-ux-pro-max: estilo "Liquid Glass", uso moderado) */
+  .glass {
+    @apply border border-white/50 bg-white/70 shadow-glass backdrop-blur-xl;
+  }
+  .glass-dark {
+    @apply border border-white/10 bg-white/5 shadow-glass backdrop-blur-xl;
   }
 
+  /* Formulario ------------------------------------------------------------ */
   .input {
-    @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900
-           placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200;
+    @apply w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900
+           shadow-inner-soft transition placeholder:text-slate-400
+           focus:border-brand-400 focus:outline-none focus:ring-4 focus:ring-brand-500/15;
   }
   .label {
-    @apply mb-1 block text-sm font-medium text-slate-700;
+    @apply mb-1.5 block text-sm font-medium text-slate-700;
   }
-  .card {
-    @apply rounded-xl border border-slate-200 bg-white shadow-sm;
-  }
+
+  /* Chips / badges ---------------------------------------------------------- */
   .badge {
-    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold;
   }
-  .badge-green {
-    @apply badge bg-emerald-100 text-emerald-800;
+  .badge-green  { @apply badge bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/15; }
+  .badge-amber  { @apply badge bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/15; }
+  .badge-slate  { @apply badge bg-slate-100 text-slate-600 ring-1 ring-inset ring-slate-500/10; }
+  .badge-brand  { @apply badge bg-brand-50 text-brand-700 ring-1 ring-inset ring-brand-600/15; }
+  .badge-violet { @apply badge bg-violet-50 text-violet-700 ring-1 ring-inset ring-violet-600/15; }
+  .chip {
+    @apply inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-slate-200 bg-white
+           px-3.5 py-1.5 text-sm font-medium text-slate-600 transition-all duration-200
+           hover:-translate-y-0.5 hover:border-brand-300 hover:text-brand-700 hover:shadow-soft;
   }
-  .badge-amber {
-    @apply badge bg-amber-100 text-amber-800;
+  .chip-active {
+    @apply border-transparent bg-gradient-to-r from-brand-600 to-violet-600 text-white shadow-glow;
   }
-  .badge-slate {
-    @apply badge bg-slate-100 text-slate-700;
+
+  /* Texto decorativo --------------------------------------------------------- */
+  .text-gradient {
+    @apply bg-gradient-to-r from-brand-600 via-violet-600 to-fuchsia-500 bg-clip-text text-transparent;
   }
-  .badge-brand {
-    @apply badge bg-brand-100 text-brand-800;
+  .eyebrow {
+    @apply inline-flex items-center gap-2 rounded-full border border-brand-200/60 bg-brand-50/70
+           px-3.5 py-1 text-xs font-bold uppercase tracking-[0.14em] text-brand-700;
   }
+
+  /* Skeleton shimmer (idioma HyperUI; reserva espacio → CLS < 0.1) ------------ */
+  .skeleton {
+    @apply rounded-xl bg-slate-100;
+    background-image: linear-gradient(90deg, rgb(241 245 249) 0px, rgb(226 232 240 / 0.9) 40%, rgb(241 245 249) 80%);
+    background-size: 400px 100%;
+    animation: mk-shimmer 1.4s linear infinite;
+  }
+
+  /* Scroll reveal (se activa con la directiva appReveal) ---------------------- */
+  .reveal {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  .reveal-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Borde con degradado animado (idioma uiverse: gradient border) -------------- */
+  .gradient-border {
+    position: relative;
+    background: var(--color-surface);
+    border-radius: 1rem;
+  }
+  .gradient-border::before {
+    content: '';
+    position: absolute;
+    inset: -1.5px;
+    border-radius: inherit;
+    background: linear-gradient(120deg, var(--mk-indigo-500), var(--mk-violet-600), var(--mk-fuchsia-500), var(--mk-sky-500));
+    background-size: 300% 300%;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    animation: mk-gradient-x 6s ease infinite;
+  }
+  .gradient-border:hover::before { opacity: 1; }
+
+  /* Marquee infinito (banda de tecnologías) ----------------------------------- */
+  .marquee-mask {
+    -webkit-mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+  }
+}
+
+/* ── Keyframes globales ───────────────────────────────────────────────────── */
+@keyframes mk-shine {
+  to { transform: translateX(120%); }
+}
+@keyframes mk-shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+@keyframes mk-gradient-x {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ── Accesibilidad: movimiento reducido anula animaciones (skill checklist) ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal { opacity: 1 !important; transform: none !important; }
 }
 
 /* ── Ajustes del reproductor video.js ─────────────────────────────────────── */
 .video-js {
-  @apply rounded-xl;
+  @apply rounded-2xl;
 }
 .video-js .vjs-big-play-button {
-  @apply rounded-full border-0 bg-brand-600/90 leading-[2.2em] transition hover:bg-brand-700;
-  width: 2.2em;
-  height: 2.2em;
+  @apply border-0 bg-brand-600/90 leading-[2.4em] transition hover:bg-brand-500 hover:scale-105;
+  width: 2.4em;
+  height: 2.4em;
   left: 50%;
   top: 50%;
+  border-radius: 9999px;
   transform: translate(-50%, -50%);
+  box-shadow: 0 8px 32px rgb(79 70 229 / 0.5);
 }
 .video-js .vjs-control-bar {
   @apply bg-slate-900/85;
 }
-.video-js .vjs-play-progress {
-  @apply bg-brand-500;
-}
-.video-js .vjs-volume-level {
-  @apply bg-brand-400;
-}
+.video-js .vjs-play-progress { @apply bg-brand-500; }
+.video-js .vjs-volume-level { @apply bg-violet-400; }
 
 /* Marca de agua disuasoria anti-piratería (spec §6.4) */
 .manako-watermark {
@@ -95,8 +285,4 @@
   transform: rotate(-24deg);
   white-space: nowrap;
   user-select: none;
-}
-
-html {
-  scroll-behavior: smooth;
 }

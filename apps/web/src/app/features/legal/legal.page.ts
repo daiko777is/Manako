@@ -146,8 +146,8 @@ const DOCS: Record<string, LegalDoc> = {
         <h1 class="mt-1 text-3xl font-bold text-slate-900">{{ d.title }}</h1>
         <p class="mt-1 text-sm text-slate-500">Última actualización: {{ d.updated }}</p>
 
-        <div class="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          ⚠️ Documento de plantilla generado desde la especificación técnica (§10). Debe ser revisado
+        <div class="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          Documento de plantilla generado desde la especificación técnica (§10). Debe ser revisado
           y adaptado por asesoría legal local antes de operar con usuarios y pagos reales.
         </div>
 

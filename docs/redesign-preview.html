@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manakō — Preview del rediseño</title>
+<style>
+  /* Preview estático del rediseño (refleja tokens de apps/web/src/styles.css).
+     Autocontenido: sin redes ni JS. Animaciones CSS puras + reduced-motion. */
+  :root {
+    --indigo-600:#4f46e5; --indigo-500:#6366f1; --violet-600:#7c3aed;
+    --fuchsia-500:#d946ef; --slate-950:#020617; --slate-900:#0f172a;
+    --slate-500:#64748b; --slate-400:#94a3b8; --slate-200:#e2e8f0;
+    --slate-100:#f1f5f9; --slate-50:#f8fafc; --emerald:#10b981; --amber:#f59e0b;
+    --grad-brand:linear-gradient(120deg,#4f46e5,#7c3aed 55%,#d946ef);
+  }
+  *{box-sizing:border-box;margin:0}
+  body{font-family:"DM Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--slate-50);color:var(--slate-900);-webkit-font-smoothing:antialiased}
+  h1,h2,h3,.heading{font-family:"Space Grotesk",ui-sans-serif,system-ui,sans-serif;letter-spacing:-.02em}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+  .muted{color:var(--slate-500)}
+  /* ── Navbar ── */
+  .nav{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.82);backdrop-filter:blur(16px);border-bottom:1px solid rgba(226,232,240,.8);box-shadow:0 2px 16px -4px rgba(15,23,42,.06)}
+  .nav-in{display:flex;align-items:center;gap:22px;height:64px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px}
+  .logo-mark{width:36px;height:36px;border-radius:12px;background:var(--grad-brand);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;box-shadow:0 8px 40px -8px rgba(99,102,241,.45);position:relative}
+  .logo-mark::after{content:"";position:absolute;top:-2px;right:-2px;width:10px;height:10px;border-radius:99px;background:#34d399;border:2px solid #fff}
+  .logo .accent{background:var(--grad-brand);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .nav a.link{color:#475569;text-decoration:none;font-size:14px;font-weight:500;padding:8px 12px;border-radius:12px;display:flex;gap:6px;align-items:center;transition:.2s}
+  .nav a.link:hover{background:rgba(15,23,42,.05);color:var(--slate-900)}
+  .nav a.link.active{background:linear-gradient(to right,#eef2ff,#f5f3ff);color:var(--indigo-600);font-weight:600}
+  .spacer{flex:1}
+  .avatar{display:flex;align-items:center;gap:8px;border:1px solid var(--slate-200);background:rgba(255,255,255,.7);border-radius:99px;padding:4px 12px 4px 4px;font-size:13px;color:#334155}
+  .avatar b{width:28px;height:28px;border-radius:99px;background:linear-gradient(135deg,var(--indigo-500),var(--violet-600));color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px}
+  /* ── Botones ── */
+  .btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:10px 18px;font-size:14px;font-weight:600;text-decoration:none;transition:.2s;border:0;cursor:pointer}
+  .btn-primary{position:relative;overflow:hidden;color:#fff;background:linear-gradient(90deg,#4f46e5,#7c3aed,#4f46e5);background-size:200% auto;box-shadow:0 8px 24px -6px rgba(79,70,229,.4),0 16px 48px -12px rgba(15,23,42,.16)}
+  .btn-primary:hover{background-position:right center;box-shadow:0 0 0 1px rgba(99,102,241,.25),0 8px 40px -8px rgba(99,102,241,.5)}
+  .btn-primary::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.35) 50%,transparent 70%);transform:translateX(-120%)}
+  .btn-primary:hover::after{animation:shine .9s ease forwards}
+  @keyframes shine{to{transform:translateX(120%)}}
+  .btn-glass{color:#fff;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);backdrop-filter:blur(8px)}
+  .btn-glass:hover{background:rgba(255,255,255,.2)}
+  .btn-lg{padding:13px 24px;font-size:15px}
+  /* ── Hero ── */
+  .hero{position:relative;overflow:hidden;background:var(--slate-950);padding:84px 0 92px;color:#fff}
+  .mesh{position:absolute;inset:0;opacity:.9;background:
+    radial-gradient(at 20% 20%,rgba(79,70,229,.35) 0,transparent 50%),
+    radial-gradient(at 80% 0%,rgba(124,58,237,.3) 0,transparent 50%),
+    radial-gradient(at 65% 75%,rgba(14,165,233,.22) 0,transparent 55%),
+    radial-gradient(at 10% 90%,rgba(217,70,239,.18) 0,transparent 50%)}
+  .grid{position:absolute;inset:0;opacity:.35;background:linear-gradient(to right,rgba(148,163,184,.12) 1px,transparent 1px),linear-gradient(to bottom,rgba(148,163,184,.12) 1px,transparent 1px);background-size:44px 44px}
+  .blob{position:absolute;border-radius:999px;filter:blur(64px);animation:blob 14s ease-in-out infinite}
+  @keyframes blob{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(28px,-36px) scale(1.08)}66%{transform:translate(-20px,22px) scale(.94)}}
+  .hero-in{position:relative;display:grid;gap:52px;grid-template-columns:1.1fr .9fr;align-items:center}
+  @media(max-width:960px){.hero-in{grid-template-columns:1fr}.mock-wrap{display:none}}
+  .eyebrow{display:inline-flex;gap:8px;align-items:center;border-radius:99px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.1);backdrop-filter:blur(8px);padding:6px 14px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#c7d2fe}
+  h1.title{margin-top:20px;font-size:clamp(38px,5.4vw,60px);line-height:1.06;font-weight:700}
+  .grad-text{background:linear-gradient(90deg,#a5b4fc,#c4b5fd,#f0abfc);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p.lead{margin-top:22px;max-width:560px;font-size:18px;line-height:1.65;color:#cbd5e1}
+  .hero .cta-row{margin-top:32px;display:flex;gap:12px;flex-wrap:wrap}
+  .stats{margin-top:44px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:520px}
+  .stat{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);backdrop-filter:blur(14px);border-radius:16px;padding:16px;text-align:center;box-shadow:0 8px 32px rgba(15,23,42,.18)}
+  .stat .num{font-family:"Space Grotesk",sans-serif;font-size:24px;font-weight:700}
+  .stat .lbl{margin-top:4px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--slate-400)}
+  /* mock reproductor */
+  .mock-wrap{position:relative}
+  .mock-glow{position:absolute;inset:-24px;border-radius:32px;background:linear-gradient(135deg,rgba(99,102,241,.3),rgba(139,92,246,.2),rgba(217,70,239,.3));filter:blur(32px)}
+  .mock{position:relative;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);backdrop-filter:blur(20px);border-radius:24px;padding:12px;box-shadow:0 8px 32px rgba(15,23,42,.2);animation:floatslow 9s ease-in-out infinite}
+  @keyframes floatslow{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-14px) rotate(1deg)}}
+  .mock .dots{display:flex;gap:6px;padding:4px 8px 12px}
+  .mock .dots i{width:10px;height:10px;border-radius:99px}
+  .mock .video{position:relative;border-radius:16px;aspect-ratio:16/9;background:linear-gradient(135deg,#0f172a,#1e1b4b);display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .mock .video::before{content:"";position:absolute;inset:0;opacity:.4;background:radial-gradient(at 30% 30%,rgba(79,70,229,.5) 0,transparent 55%),radial-gradient(at 75% 70%,rgba(217,70,239,.35) 0,transparent 55%)}
+  .playbtn{position:relative;width:60px;height:60px;border-radius:99px;background:rgba(255,255,255,.95);color:var(--indigo-600);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 32px rgba(79,70,229,.5)}
+  .mock .ts{position:absolute;bottom:10px;right:12px;background:rgba(2,6,23,.7);border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600}
+  .mock .row{display:flex;align-items:center;gap:14px;padding:14px}
+  .ring{width:52px;height:52px;border-radius:99px;background:conic-gradient(#818cf8 0% 65%,rgba(255,255,255,.12) 65% 100%);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .ring i{width:42px;height:42px;border-radius:99px;background:#111827;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:11px;font-weight:700;color:#fff}
+  .mock .meta{flex:1;min-width:0}
+  .mock .meta .k{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#a5b4fc}
+  .mock .meta .t{font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+  .bar{margin-top:8px;height:6px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden}
+  .bar i{display:block;height:100%;width:65%;border-radius:99px;background:linear-gradient(90deg,#818cf8,#e879f9)}
+  .pill-ok{display:flex;align-items:center;gap:4px;border-radius:99px;background:rgba(16,185,129,.15);color:#6ee7b7;font-size:11px;font-weight:700;padding:5px 10px}
+  .chip-float{position:absolute;display:flex;gap:8px;align-items:center;background:rgba(255,255,255,.85);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.5);border-radius:16px;padding:10px 14px;font-size:12px;font-weight:600;color:#1e293b;box-shadow:0 8px 32px rgba(15,23,42,.18);animation:float 6s ease-in-out infinite}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  .chip-a{left:-38px;top:96px;animation-delay:-2s}
+  .chip-b{right:-20px;bottom:64px;animation-delay:-5s}
+  .chip-ic{width:26px;height:26px;border-radius:9px;display:flex;align-items:center;justify-content:center}
+  /* ── Marquee ── */
+  .marquee{background:#fff;border-block:1px solid var(--slate-200);padding:18px 0;overflow:hidden;
+    -webkit-mask-image:linear-gradient(to right,transparent,#000 12%,#000 88%,transparent);
+            mask-image:linear-gradient(to right,transparent,#000 12%,#000 88%,transparent)}
+  .marquee-track{display:flex;gap:40px;width:max-content;animation:marquee 28s linear infinite}
+  @keyframes marquee{to{transform:translateX(-50%)}}
+  .marquee span{display:flex;gap:10px;align-items:center;font-size:13.5px;font-weight:600;color:var(--slate-400);white-space:nowrap}
+  .marquee i{width:6px;height:6px;border-radius:99px;background:var(--grad-brand)}
+  /* ── Secciones ── */
+  section.block{padding:76px 0}
+  .sec-head{max-width:640px}
+  .eyebrow-light{display:inline-flex;gap:8px;align-items:center;border-radius:99px;border:1px solid rgba(79,70,229,.2);background:#eef2ff;padding:6px 14px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--indigo-600)}
+  h2.sec{margin-top:16px;font-size:clamp(26px,3.4vw,38px);font-weight:700;line-height:1.15}
+  .grad-inline{background:var(--grad-brand);-webkit-background-clip:text;background-clip:text;color:transparent}
+  /* problema/solución */
+  .two{display:grid;gap:48px;grid-template-columns:1fr 1fr;align-items:center}
+  @media(max-width:900px){.two{grid-template-columns:1fr}}
+  .strike{position:relative;color:#f43f5e;white-space:nowrap}
+  .strike svg{position:absolute;left:0;bottom:-6px;width:100%}
+  .step{display:flex;gap:16px;align-items:flex-start;background:#fff;border:1px solid var(--slate-200);border-radius:18px;padding:20px;box-shadow:0 2px 16px -4px rgba(15,23,42,.08);transition:.3s}
+  .step:hover{transform:translateY(-2px);border-color:#c7d2fe;box-shadow:0 8px 24px -6px rgba(79,70,229,.18)}
+  .step .ic{width:44px;height:44px;flex-shrink:0;border-radius:13px;display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 8px 40px -8px rgba(99,102,241,.45)}
+  .step h3{font-size:15.5px;font-weight:700}
+  .step p{margin-top:5px;font-size:13.5px;line-height:1.6;color:var(--slate-500)}
+  /* features */
+  .features{background:#fff;border-block:1px solid var(--slate-200)}
+  .fgrid{margin-top:52px;display:grid;gap:22px;grid-template-columns:repeat(3,1fr)}
+  @media(max-width:960px){.fgrid{grid-template-columns:1fr 1fr}}
+  @media(max-width:640px){.fgrid{grid-template-columns:1fr}}
+  .feature{position:relative;background:#fff;border-radius:18px;padding:26px;border:1px solid var(--slate-200);transition:.3s}
+  .feature:hover{border-color:transparent;box-shadow:0 8px 24px -6px rgba(79,70,229,.18),0 16px 48px -12px rgba(15,23,42,.14)}
+  .feature:hover .fic{transform:scale(1.1) rotate(3deg)}
+  .fic{width:48px;height:48px;border-radius:15px;background:var(--grad-brand);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 40px -8px rgba(99,102,241,.5);transition:.3s}
+  .feature h3{margin-top:18px;font-size:16.5px;font-weight:700}
+  .feature p{margin-top:8px;font-size:13.5px;line-height:1.65;color:var(--slate-500)}
+  /* cursos */
+  .courses{display:grid;gap:22px;grid-template-columns:repeat(3,1fr);margin-top:44px}
+  @media(max-width:960px){.courses{grid-template-columns:1fr 1fr}}
+  @media(max-width:640px){.courses{grid-template-columns:1fr}}
+  .course{background:#fff;border:1px solid var(--slate-200);border-radius:18px;overflow:hidden;box-shadow:0 2px 16px -4px rgba(15,23,42,.08);transition:.3s;text-decoration:none;color:inherit;display:flex;flex-direction:column}
+  .course:hover{transform:translateY(-4px);border-color:#c7d2fe;box-shadow:0 8px 24px -6px rgba(79,70,229,.2),0 16px 48px -12px rgba(15,23,42,.16)}
+  .cover{position:relative;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .cover.c1{background:linear-gradient(135deg,#4f46e5,#7c3aed 60%,#d946ef)}
+  .cover.c2{background:linear-gradient(135deg,#0ea5e9,#4f46e5 65%,#312e81)}
+  .cover.c3{background:linear-gradient(135deg,#0f766e,#10b981 60%,#84cc16)}
+  .cover::before{content:"";position:absolute;inset:0;opacity:.35;background:linear-gradient(to right,rgba(255,255,255,.14) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.14) 1px,transparent 1px);background-size:32px 32px}
+  .cover .ct{position:relative;padding:18px;text-align:center;color:#fff;font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:17px;line-height:1.3;transition:.3s}
+  .course:hover .cover .ct{transform:scale(1.03)}
+  .cover .free{position:absolute;left:12px;top:12px;background:rgba(16,185,129,.95);color:#fff;font-size:10.5px;font-weight:800;letter-spacing:.06em;border-radius:99px;padding:5px 10px;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+  .cover .students{position:absolute;left:12px;top:42px;background:rgba(2,6,23,.6);backdrop-filter:blur(4px);color:#fff;font-size:10.5px;font-weight:600;border-radius:99px;padding:4px 10px;display:flex;gap:4px;align-items:center}
+  .cover .ovplay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:.3s;background:rgba(2,6,23,.25)}
+  .course:hover .ovplay{opacity:1}
+  .ovplay i{width:46px;height:46px;border-radius:99px;background:rgba(255,255,255,.95);color:var(--indigo-600);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 32px rgba(79,70,229,.5)}
+  .course .body{padding:16px;display:flex;flex-direction:column;gap:10px;flex:1}
+  .kicker{display:flex;gap:8px;align-items:center;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+  .kicker .cat{background:var(--grad-brand);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .course h3{font-size:15px;font-weight:700;line-height:1.4}
+  .course:hover h3{color:var(--indigo-600)}
+  .meta{display:flex;gap:12px;font-size:11.5px;color:var(--slate-500)}
+  .meta span{display:flex;gap:4px;align-items:center}
+  .cfoot{margin-top:auto;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--slate-100);padding-top:12px}
+  .who{display:flex;gap:8px;align-items:center;font-size:11.5px;color:var(--slate-500);min-width:0}
+  .who b{width:24px;height:24px;border-radius:99px;background:#e0e7ff;color:var(--indigo-600);font-size:9.5px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .who span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .price{font-weight:800;font-size:14px;background:var(--grad-brand);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .price.free{background:#ecfdf5;color:#047857;border-radius:99px;padding:4px 12px;font-size:12.5px}
+  /* CTA final */
+  .cta{position:relative;overflow:hidden;border-radius:28px;background:var(--slate-950);padding:72px 32px;text-align:center;color:#fff}
+  .cta h2{margin:20px auto 0;max-width:640px;font-size:clamp(28px,4vw,44px);line-height:1.15;font-weight:700}
+  .cta p{margin:20px auto 0;max-width:520px;color:#cbd5e1;font-size:16.5px;line-height:1.65}
+  .cta .btn-row{margin-top:34px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  /* footer */
+  footer{margin-top:84px;background:var(--slate-950);color:#cbd5e1;position:relative;overflow:hidden}
+  footer .topline{height:4px;background:linear-gradient(90deg,#6366f1,#8b5cf6,#d946ef);background-size:200% auto;animation:gradx 6s ease infinite}
+  @keyframes gradx{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+  .fcols{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:40px;padding:52px 0}
+  @media(max-width:760px){.fcols{grid-template-columns:1fr}}
+  footer h4{color:#fff;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px}
+  footer a{display:block;color:var(--slate-400);font-size:13.5px;text-decoration:none;padding:5px 0;transition:.2s}
+  footer a:hover{color:#fff}
+  footer .fine{border-top:1px solid rgba(255,255,255,.08);padding:20px 0;font-size:12px;color:#64748b;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  .note{max-width:1120px;margin:26px auto;padding:14px 20px;border-radius:14px;background:#eef2ff;border:1px solid #c7d2fe;color:#3730a3;font-size:13px;line-height:1.6}
+  svg.i{flex-shrink:0}
+  @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+<!-- ═════════ NAVBAR ═════════ -->
+<header class="nav">
+  <div class="wrap nav-in">
+    <span class="logo heading"><span class="logo-mark">M</span> Manak<span class="accent">ō</span></span>
+    <a class="link active" href="#"><svg class="i" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg> Catálogo</a>
+    <a class="link" href="#"><svg class="i" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.04A8.97 8.97 0 006 3.75c-1.05 0-2.06.18-3 .51v14.25A8.99 8.99 0 016 18c2.3 0 4.4.87 6 2.29m0-14.25a8.97 8.97 0 016-2.29c1.05 0 2.06.18 3 .51v14.25A8.99 8.99 0 0018 18a8.97 8.97 0 00-6 2.29m0-14.25v14.25"/></svg> Mi aprendizaje</a>
+    <a class="link" href="#"><svg class="i" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h16.5m0 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m-9.5-9l3-3 2.15 2.15A12.06 12.06 0 0116.5 7.6"/></svg> Instructor</a>
+    <span class="spacer"></span>
+    <span class="avatar"><b>MP</b> Marco Pérez <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg></span>
+  </div>
+</header>
+
+<!-- ═════════ HERO ═════════ -->
+<section class="hero">
+  <div class="mesh"></div><div class="grid"></div>
+  <div class="blob" style="left:-128px;top:40px;width:384px;height:384px;background:rgba(79,70,229,.3)"></div>
+  <div class="blob" style="right:-96px;top:160px;width:320px;height:320px;background:rgba(217,70,239,.2);animation-delay:-7s"></div>
+  <div class="blob" style="bottom:0;left:33%;width:288px;height:288px;background:rgba(14,165,233,.2);animation-delay:-3s"></div>
+
+  <div class="wrap hero-in">
+    <div>
+      <span class="eyebrow">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.81 15.9L9.37 17.25l-.44-1.35a2.25 2.25 0 00-1.44-1.44L6.15 14.02l1.35-.44a2.25 2.25 0 001.44-1.44l.44-1.34.43 1.34a2.25 2.25 0 001.44 1.44l1.35.44-1.35.44a2.25 2.25 0 00-1.44 1.44z"/><path d="M18.26 8.71L18 9.75l-.26-1.03a3.37 3.37 0 00-2.45-2.46L14.25 6l1.04-.26a3.37 3.37 0 002.45-2.46L18 2.25l.26 1.04a3.37 3.37 0 002.46 2.45L21.75 6l-1.04.26a3.37 3.37 0 00-2.45 2.46z"/></svg>
+        Plataforma de cursos para profesionales tech
+      </span>
+      <h1 class="title">Aprende a tu ritmo.<br><span class="grad-text">Llega hasta el final.</span></h1>
+      <p class="lead">Cursos en video organizados en módulos con desbloqueo secuencial, seguimiento automático de progreso y certificación. El 80% de abandonar un curso es fricción — Manakō la elimina.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary btn-lg" href="#">Explorar catálogo <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg></a>
+        <a class="btn btn-glass btn-lg" href="#">Crear cuenta gratis</a>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="num">24+</div><div class="lbl">Cursos</div></div>
+        <div class="stat"><div class="num">100%</div><div class="lbl">Progreso</div></div>
+        <div class="stat"><div class="num">24/7</div><div class="lbl">A tu ritmo</div></div>
+      </div>
+    </div>
+
+    <div class="mock-wrap">
+      <div class="mock-glow"></div>
+      <div class="mock">
+        <div class="dots"><i style="background:#fb7185"></i><i style="background:#fbbf24"></i><i style="background:#34d399"></i><span style="margin-left:10px;font-size:11px;color:#94a3b8">manako.app/aprender</span></div>
+        <div class="video">
+          <span class="playbtn"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M5.25 5.65c0-.85.92-1.4 1.67-.98l11.54 6.34a1.13 1.13 0 010 1.98L6.92 19.33a1.13 1.13 0 01-1.67-.99V5.65z"/></svg></span>
+          <span class="ts">12:04 / 18:30</span>
+        </div>
+        <div class="row">
+          <span class="ring"><i>65%</i></span>
+          <span class="meta">
+            <span class="k">Módulo 3 · Lección 2</span>
+            <span class="t">Signals vs RxJS: cuándo usar cada uno</span>
+            <span class="bar"><i></i></span>
+          </span>
+          <span class="pill-ok"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.75l6 6 9-13.5"/></svg> 2/4</span>
+        </div>
+      </div>
+      <div class="chip-float chip-a"><span class="chip-ic" style="background:#d1fae5;color:#059669"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></span> Lección completada +1</div>
+      <div class="chip-float chip-b"><span class="chip-ic" style="background:#fef3c7;color:#d97706"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg></span> Siguiente: se desbloquea al terminar</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════ MARQUEE ═════════ -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span><i></i>Angular</span><span><i></i>RxJS</span><span><i></i>Signals</span><span><i></i>NestJS</span><span><i></i>Supabase</span><span><i></i>PostgreSQL</span><span><i></i>Stripe</span><span><i></i>Mux HLS</span><span><i></i>Tailwind CSS</span><span><i></i>Prisma</span><span><i></i>TypeScript</span><span><i></i>Docker</span>
+    <span><i></i>Angular</span><span><i></i>RxJS</span><span><i></i>Signals</span><span><i></i>NestJS</span><span><i></i>Supabase</span><span><i></i>PostgreSQL</span><span><i></i>Stripe</span><span><i></i>Mux HLS</span><span><i></i>Tailwind CSS</span><span><i></i>Prisma</span><span><i></i>TypeScript</span><span><i></i>Docker</span>
+  </div>
+</div>
+
+<!-- ═════════ PROBLEMA → SOLUCIÓN ═════════ -->
+<section class="block">
+  <div class="wrap two">
+    <div class="sec-head">
+      <span class="eyebrow-light">El problema</span>
+      <h2 class="sec">El 90% de quienes empiezan un curso online <span class="strike">no lo termina<svg height="8" viewBox="0 0 200 8" preserveAspectRatio="none"><path d="M0 5 Q50 1 100 5 T200 4" stroke="#f43f5e" stroke-width="2.5" fill="none" stroke-linecap="round" opacity=".5"/></svg></span></h2>
+      <p style="margin-top:20px;font-size:17px;line-height:1.7;color:var(--slate-500)">Videos sueltos, sin orden, sin feedback, sin meta. La motivación se evapora cuando nada te dice cuánto te falta ni qué sigue.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="step"><span class="ic" style="background:linear-gradient(135deg,#4f46e5,#7c3aed)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.63 4.5h12.75a1.88 1.88 0 010 3.75H5.63a1.88 1.88 0 010-3.75z"/></svg></span><div><h3>Ruta clara, paso a paso</h3><p>Módulos ordenados con lecciones cortas. Siempre sabes qué sigue y cuánto te falta.</p></div></div>
+      <div class="step"><span class="ic" style="background:linear-gradient(135deg,#0ea5e9,#4f46e5)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 13.13C3 12.5 3.5 12 4.13 12h2.25c.62 0 1.12.5 1.12 1.13v6.75c0 .62-.5 1.12-1.12 1.12h-2.25A1.13 1.13 0 013 19.88v-6.75zM9.75 8.63c0-.63.5-1.13 1.13-1.13h2.25c.62 0 1.12.5 1.12 1.12v11.25c0 .63-.5 1.13-1.12 1.13h-2.25a1.13 1.13 0 01-1.13-1.13V8.63zM16.5 4.13c0-.63.5-1.13 1.13-1.13h2.25c.62 0 1.12.5 1.12 1.12v15.75c0 .63-.5 1.13-1.12 1.13h-2.25a1.13 1.13 0 01-1.13-1.13V4.13z"/></svg></span><div><h3>Feedback constante</h3><p>Tu progreso se sincroniza segundo a segundo y ves tu porcentaje crecer en cada sesión.</p></div></div>
+      <div class="step"><span class="ic" style="background:linear-gradient(135deg,#d946ef,#7c3aed)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="6"/><path d="M9 14.4L7.5 21.6 12 19.05l4.5 2.55L15 14.4"/></svg></span><div><h3>Meta a la vista</h3><p>El certificado te espera al final — una razón concreta para no soltar el curso a medias.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════ FEATURES ═════════ -->
+<section class="block features">
+  <div class="wrap">
+    <div class="sec-head" style="margin:0 auto;text-align:center">
+      <span class="eyebrow-light">Por qué Manakō</span>
+      <h2 class="sec">Todo lo que necesitas para <span class="grad-inline">terminar</span> lo que empiezas</h2>
+    </div>
+    <div class="fgrid">
+      <div class="feature"><span class="fic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 13.13C3 12.5 3.5 12 4.13 12h2.25c.62 0 1.12.5 1.12 1.13v6.75c0 .62-.5 1.12-1.12 1.12h-2.25A1.13 1.13 0 013 19.88v-6.75zM9.75 8.63c0-.63.5-1.13 1.13-1.13h2.25c.62 0 1.12.5 1.12 1.12v11.25c0 .63-.5 1.13-1.12 1.13h-2.25a1.13 1.13 0 01-1.13-1.13V8.63zM16.5 4.13c0-.63.5-1.13 1.13-1.13h2.25c.62 0 1.12.5 1.12 1.12v15.75c0 .63-.5 1.13-1.12 1.13h-2.25a1.13 1.13 0 01-1.13-1.13V4.13z"/></svg></span><h3>Progreso que se siente</h3><p>Cada segundo cuenta: el seguimiento se guarda solo y retomas exactamente donde lo dejaste, en cualquier dispositivo.</p></div>
+      <div class="feature"><span class="fic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg></span><h3>Ruta secuencial</h3><p>Las lecciones se desbloquean a medida que avanzas. Sin saltos al vacío: el curso te lleva de la mano hasta el final.</p></div>
+      <div class="feature"><span class="fic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="6"/><path d="M9 14.4L7.5 21.6 12 19.05l4.5 2.55L15 14.4"/></svg></span><h3>Certificado al terminar</h3><p>Completa el 100% y obtén tu certificado para compartir en tu portafolio y redes profesionales.</p></div>
+      <div class="feature"><span class="fic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12.75L11.25 15 15 9.75m-3-7.04A11.96 11.96 0 013.6 6 12 12 0 003 9.75c0 5.59 3.82 10.29 9 11.62 5.18-1.33 9-6.03 9-11.62 0-1.31-.21-2.57-.6-3.75h-.15c-3.2 0-6.1-1.25-8.25-3.29z"/></svg></span><h3>Contenido protegido</h3><p>Streaming adaptativo con URLs firmadas y marca de agua: calidad premium con protección anti-piratería.</p></div>
+      <div class="feature"><span class="fic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg></span><h3>Previews antes de comprar</h3><p>Prueba lecciones de muestra gratis en cada curso. Compra sabiendo exactamente qué te espera.</p></div>
+      <div class="feature"><span class="fic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.36 5.21A8.25 8.25 0 0112 21 8.25 8.25 0 016.04 7.05 8.29 8.29 0 009 9.6a8.98 8.98 0 013.36-6.87 8.21 8.21 0 003 2.48z"/><path d="M12 18a3.75 3.75 0 00.5-7.47 5.99 5.99 0 00-1.93 3.55 5.97 5.97 0 01-2.13-1A3.75 3.75 0 0012 18z"/></svg></span><h3>A tu ritmo, sin excusas</h3><p>Acceso de por vida, velocidad de reproducción configurable y recordatorios suaves para mantener la racha.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════ CURSOS DESTACADOS ═════════ -->
+<section class="block">
+  <div class="wrap">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap">
+      <div class="sec-head"><span class="eyebrow-light">Empieza hoy</span><h2 class="sec">Cursos destacados</h2></div>
+      <a href="#" style="color:var(--indigo-600);font-weight:700;font-size:14px;text-decoration:none;display:flex;gap:6px;align-items:center">Ver todo el catálogo <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg></a>
+    </div>
+
+    <div class="courses">
+      <a class="course" href="#">
+        <div class="cover c1"><span class="free">GRATIS</span><span class="students"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 19.13a9.4 9.4 0 002.63.37 9.3 9.3 0 004.12-.95 4.13 4.13 0 00-7.53-2.5M15 19.13v-.01c0-1.11-.29-2.16-.79-3.07m.79 3.08v.1A12.3 12.3 0 018.62 21a12.4 12.4 0 01-6.37-1.77v-.1a6.38 6.38 0 0111.96-3.08M12 6.38a3.38 3.38 0 11-6.75 0 3.38 3.38 0 016.75 0zm8.25 2.25a2.63 2.63 0 11-5.25 0 2.63 2.63 0 015.25 0z"/></svg> 128</span><span class="ct">Angular 18 desde cero: Signals, RxJS y Standalone</span><span class="ovplay"><i><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M5.25 5.65c0-.85.92-1.4 1.67-.98l11.54 6.34a1.13 1.13 0 010 1.98L6.92 19.33a1.13 1.13 0 01-1.67-.99V5.65z"/></svg></i></span></div>
+        <div class="body">
+          <div class="kicker"><span class="cat">Desarrollo Web</span> <span style="color:#cbd5e1">•</span> <span class="muted">Principiante</span></div>
+          <h3>Angular 18 desde cero: Signals, RxJS y Standalone Components</h3>
+          <div class="meta"><span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3.75 9.75h16.5M7.5 5.25v4.5m9-4.5v4.5M9.75 12.9l3 1.75-3 1.75v-3.5z"/></svg> 4 lecciones</span><span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> 53 min</span></div>
+          <div class="cfoot"><span class="who"><b>VR</b><span>Valentina Ríos</span></span><span class="price free">Gratis</span></div>
+        </div>
+      </a>
+
+      <a class="course" href="#">
+        <div class="cover c2"><span class="students"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 19.13a9.4 9.4 0 002.63.37 9.3 9.3 0 004.12-.95 4.13 4.13 0 00-7.53-2.5M15 19.13v-.01c0-1.11-.29-2.16-.79-3.07m.79 3.08v.1A12.3 12.3 0 018.62 21a12.4 12.4 0 01-6.37-1.77v-.1a6.38 6.38 0 0111.96-3.08M12 6.38a3.38 3.38 0 11-6.75 0 3.38 3.38 0 016.75 0zm8.25 2.25a2.63 2.63 0 11-5.25 0 2.63 2.63 0 015.25 0z"/></svg> 64</span><span class="ct">NestJS profesional: APIs escalables con Prisma y Docker</span><span class="ovplay"><i><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M5.25 5.65c0-.85.92-1.4 1.67-.98l11.54 6.34a1.13 1.13 0 010 1.98L6.92 19.33a1.13 1.13 0 01-1.67-.99V5.65z"/></svg></i></span></div>
+        <div class="body">
+          <div class="kicker"><span class="cat">Datos e IA</span> <span style="color:#cbd5e1">•</span> <span class="muted">Intermedio</span></div>
+          <h3>NestJS profesional: APIs escalables con Prisma y Docker</h3>
+          <div class="meta"><span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3.75 9.75h16.5M7.5 5.25v4.5m9-4.5v4.5M9.75 12.9l3 1.75-3 1.75v-3.5z"/></svg> 2 lecciones</span><span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> 26 min</span><span style="color:#f59e0b"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M11.48 3.5a.56.56 0 011.04 0l2.13 5.11c.08.2.27.33.47.35l5.52.44c.5.04.7.66.32.99l-4.2 3.6a.56.56 0 00-.19.56l1.29 5.38c.11.49-.41.87-.84.61l-4.73-2.88a.56.56 0 00-.58 0l-4.73 2.88c-.43.26-.95-.12-.84-.61l1.29-5.38a.56.56 0 00-.19-.56l-4.2-3.6c-.38-.33-.18-.95.32-.99l5.52-.44a.56.56 0 00.47-.35l2.13-5.1z"/></svg> 4.8</span></div>
+          <div class="cfoot"><span class="who"><b>VR</b><span>Valentina Ríos</span></span><span class="price">$49.99</span></div>
+        </div>
+      </a>
+
+      <a class="course" href="#">
+        <div class="cover c3"><span class="students"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 19.13a9.4 9.4 0 002.63.37 9.3 9.3 0 004.12-.95 4.13 4.13 0 00-7.53-2.5M15 19.13v-.01c0-1.11-.29-2.16-.79-3.07m.79 3.08v.1A12.3 12.3 0 018.62 21a12.4 12.4 0 01-6.37-1.77v-.1a6.38 6.38 0 0111.96-3.08M12 6.38a3.38 3.38 0 11-6.75 0 3.38 3.38 0 016.75 0zm8.25 2.25a2.63 2.63 0 11-5.25 0 2.63 2.63 0 015.25 0z"/></svg> 31</span><span class="ct">PWA con Angular: modo offline real</span><span class="ovplay"><i><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M5.25 5.65c0-.85.92-1.4 1.67-.98l11.54 6.34a1.13 1.13 0 010 1.98L6.92 19.33a1.13 1.13 0 01-1.67-.99V5.65z"/></svg></i></span></div>
+        <div class="body">
+          <div class="kicker"><span class="cat">Mobile</span> <span style="color:#cbd5e1">•</span> <span class="muted">Avanzado</span></div>
+          <h3>PWA con Angular: modo offline real y service workers</h3>
+          <div class="meta"><span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3.75 9.75h16.5M7.5 5.25v4.5m9-4.5v4.5M9.75 12.9l3 1.75-3 1.75v-3.5z"/></svg> 8 lecciones</span><span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> 2 h 10 min</span></div>
+          <div class="cfoot"><span class="who"><b>VR</b><span>Valentina Ríos</span></span><span class="price">$29.99</span></div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════ CTA INSTRUCTORES ═════════ -->
+<section class="wrap" style="padding-bottom:20px">
+  <div class="cta">
+    <div class="mesh" style="opacity:.8"></div>
+    <div class="blob" style="left:-80px;top:-80px;width:288px;height:288px;background:rgba(124,58,237,.3)"></div>
+    <div class="blob" style="right:-64px;bottom:-96px;width:288px;height:288px;background:rgba(79,70,229,.3);animation-delay:-6s"></div>
+    <div style="position:relative">
+      <span class="eyebrow">Para expertos</span>
+      <h2 class="heading">Convierte tu conocimiento en <span class="grad-text">ingresos recurrentes</span></h2>
+      <p>Publica tus cursos, sigue la retención de tus alumnos en tiempo real y recibe pagos automáticamente. Tú enseñas; Manakō se encarga del resto.</p>
+      <div class="btn-row">
+        <a class="btn btn-primary btn-lg" href="#">Convertirme en instructor <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg></a>
+        <a class="btn btn-glass btn-lg" href="#">Ver el acuerdo</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════ FOOTER ═════════ -->
+<footer>
+  <div class="topline"></div>
+  <div class="wrap">
+    <div class="fcols">
+      <div>
+        <span class="logo heading" style="color:#fff"><span class="logo-mark">M</span> Manakō</span>
+        <p style="margin-top:16px;max-width:300px;font-size:13.5px;line-height:1.7;color:var(--slate-400)">La plataforma donde los profesionales tech aprenden a su ritmo: cursos en video, progreso secuencial y certificados al terminar.</p>
+        <p style="margin-top:16px;font-size:11.5px;color:#64748b">Los certificados emitidos no constituyen titulación oficial ni acreditación gubernamental.</p>
+      </div>
+      <div><h4>Plataforma</h4><a href="#">Catálogo</a><a href="#">Crear cuenta</a><a href="#">Enseña en Manakō</a><a href="#">Mi aprendizaje</a></div>
+      <div><h4>Legal</h4><a href="#">Términos y condiciones</a><a href="#">Privacidad</a><a href="#">Cookies</a><a href="#">Reembolsos</a></div>
+    </div>
+    <div class="fine"><span>© 2026 Manakō. Hecho con Angular + Tailwind.</span><span>Preview estático del rediseño — el real corre en apps/web</span></div>
+  </div>
+</footer>
+
+<div class="note wrap">
+  <strong>Nota:</strong> esta página es una maqueta estática del rediseño para previsualizar en el visor
+  (sin red ni JS). El diseño real y funcional está en <code>apps/web</code>: hero con blobs animados y contadores
+  (IntersectionObserver + rAF), marquee infinito, scroll-reveal por directiva <code>appReveal</code>, anillos de
+  progreso SVG, skeletons shimmer, iconos SVG (Heroicons) en lugar de emojis, tipografías Space Grotesk + DM Sans
+  (recomendación de la skill <em>ui-ux-pro-max</em>), tokens en 3 capas y soporte <code>prefers-reduced-motion</code>.
+  Patrones adaptados de hyperui.dev, flowbite, uiverse.io y spartan.ng.
+</div>
+
+</body>
+</html>

@@ -6,6 +6,7 @@ import type { AdminCourseRow, AdminMetrics, AdminUserRow, PaymentSummary, UserRo
 import { AdminService } from '../../core/admin/admin.service';
 import { ToastService } from '../../core/toast/toast.service';
 import { formatDate, formatMoney, statusLabel } from '../../shared/format';
+import { IconComponent } from '../../shared/components/icon.component';
 
 type Tab = 'metrics' | 'users' | 'courses' | 'payments';
 
@@ -16,25 +17,29 @@ type Tab = 'metrics' | 'users' | 'courses' | 'payments';
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6">
       <header class="mb-8">
-        <h1 class="text-3xl font-bold text-slate-900">Administración</h1>
-        <p class="mt-1 text-slate-500">Métricas globales, moderación y pagos.</p>
+        <p class="eyebrow"><app-icon name="shield" [size]="13" /> Administración</p>
+        <h1 class="mt-3 font-heading text-3xl font-bold text-slate-900">Centro de control</h1>
+        <p class="mt-1.5 text-slate-500">Métricas globales, moderación y pagos.</p>
       </header>
 
       <!-- Tabs -->
-      <nav class="mb-8 flex gap-1 rounded-xl bg-slate-100 p-1" aria-label="Secciones de administración">
+      <nav class="mb-8 flex gap-1 rounded-2xl border border-slate-200 bg-white p-1.5 shadow-sm" aria-label="Secciones de administración">
         @for (tab of tabs; track tab.id) {
           <button
             type="button"
-            class="flex-1 rounded-lg px-4 py-2 text-sm font-medium transition"
-            [class]="activeTab() === tab.id ? 'bg-white text-brand-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'"
+            class="flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200"
+            [class]="activeTab() === tab.id
+              ? 'bg-gradient-to-r from-brand-600 to-violet-600 text-white shadow-glow'
+              : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'"
             (click)="setTab(tab.id)"
           >
-            {{ tab.label }}
+            <app-icon [name]="tab.icon" [size]="16" />
+            <span class="hidden sm:inline">{{ tab.label }}</span>
           </button>
         }
       </nav>
@@ -43,31 +48,47 @@ type Tab = 'metrics' | 'users' | 'courses' | 'payments';
       @if (activeTab() === 'metrics') {
         @if (metrics(); as m) {
           <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div class="card p-5">
-              <p class="text-xs text-slate-400">Usuarios</p>
-              <p class="mt-1 text-3xl font-bold text-slate-900">{{ m.users.total }}</p>
-              <p class="mt-1 text-xs text-slate-500">
+            <div class="card p-5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lift">
+              <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-violet-600 text-white shadow-glow">
+                <app-icon name="users" [size]="18" />
+              </span>
+              <p class="mt-3 font-heading text-3xl font-bold text-slate-900">{{ m.users.total }}</p>
+              <p class="mt-1 text-xs font-semibold uppercase tracking-wider text-slate-400">Usuarios</p>
+              <p class="mt-2 text-xs text-slate-500">
                 {{ m.users.students }} estudiantes · {{ m.users.instructors }} instructores · {{ m.users.admins }} admins
               </p>
             </div>
-            <div class="card p-5">
-              <p class="text-xs text-slate-400">Cursos</p>
-              <p class="mt-1 text-3xl font-bold text-slate-900">{{ m.courses.total }}</p>
-              <p class="mt-1 text-xs text-slate-500">{{ m.courses.published }} publicados · {{ m.courses.drafts }} borradores</p>
+            <div class="card p-5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lift">
+              <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-brand-600 text-white shadow-glow">
+                <app-icon name="academic-cap" [size]="18" />
+              </span>
+              <p class="mt-3 font-heading text-3xl font-bold text-slate-900">{{ m.courses.total }}</p>
+              <p class="mt-1 text-xs font-semibold uppercase tracking-wider text-slate-400">Cursos</p>
+              <p class="mt-2 text-xs text-slate-500">{{ m.courses.published }} publicados · {{ m.courses.drafts }} borradores</p>
             </div>
-            <div class="card p-5">
-              <p class="text-xs text-slate-400">Inscripciones activas</p>
-              <p class="mt-1 text-3xl font-bold text-slate-900">{{ m.enrollmentsActive }}</p>
-              <p class="mt-1 text-xs text-slate-500">{{ m.lessonsCompletedToday }} lecciones completadas hoy</p>
+            <div class="card p-5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lift">
+              <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-glow">
+                <app-icon name="book" [size]="18" />
+              </span>
+              <p class="mt-3 font-heading text-3xl font-bold text-slate-900">{{ m.enrollmentsActive }}</p>
+              <p class="mt-1 text-xs font-semibold uppercase tracking-wider text-slate-400">Inscripciones activas</p>
+              <p class="mt-2 text-xs text-slate-500">{{ m.lessonsCompletedToday }} lecciones completadas hoy</p>
             </div>
-            <div class="card p-5">
-              <p class="text-xs text-slate-400">Ingresos brutos</p>
-              <p class="mt-1 text-3xl font-bold text-slate-900">{{ formatMoney(m.revenueCents) }}</p>
-              <p class="mt-1 text-xs text-slate-500">Reembolsado: {{ formatMoney(m.refundedCents) }}</p>
+            <div class="card p-5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lift">
+              <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-glow">
+                <app-icon name="dollar" [size]="18" />
+              </span>
+              <p class="mt-3 font-heading text-3xl font-bold text-slate-900">{{ formatMoney(m.revenueCents) }}</p>
+              <p class="mt-1 text-xs font-semibold uppercase tracking-wider text-slate-400">Ingresos brutos</p>
+              <p class="mt-2 text-xs text-slate-500">Reembolsado: {{ formatMoney(m.refundedCents) }}</p>
             </div>
           </div>
         } @else {
-          <p class="text-slate-400">Cargando métricas…</p>
+          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            @for (i of [1, 2, 3, 4]; track i) {
+              <div class="card p-5"><div class="skeleton h-32 w-full"></div></div>
+            }
+          </div>
         }
       }
 
@@ -226,11 +247,11 @@ export class AdminDashboardPage {
   private readonly toast = inject(ToastService);
   private readonly fb = inject(FormBuilder);
 
-  protected readonly tabs: { id: Tab; label: string }[] = [
-    { id: 'metrics', label: '📈 Métricas' },
-    { id: 'users', label: '👥 Usuarios' },
-    { id: 'courses', label: '🎓 Cursos' },
-    { id: 'payments', label: '💳 Pagos' },
+  protected readonly tabs: { id: Tab; label: string; icon: string }[] = [
+    { id: 'metrics', label: 'Métricas', icon: 'chart-bar' },
+    { id: 'users', label: 'Usuarios', icon: 'users' },
+    { id: 'courses', label: 'Cursos', icon: 'academic-cap' },
+    { id: 'payments', label: 'Pagos', icon: 'credit-card' },
   ];
   protected readonly activeTab = signal<Tab>('metrics');
 

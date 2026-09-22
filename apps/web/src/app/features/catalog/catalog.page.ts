@@ -6,6 +6,8 @@ import { debounceTime, switchMap, tap } from 'rxjs';
 import type { Category, CourseLevel, CourseQuery, CourseSort, CourseSummary } from '@manako/shared';
 import { CatalogService } from '../../core/catalog/catalog.service';
 import { CourseCardComponent } from '../../shared/components/course-card.component';
+import { IconComponent } from '../../shared/components/icon.component';
+import { RevealDirective } from '../../shared/components/reveal.directive';
 
 interface Filters {
   search: string;
@@ -15,128 +17,176 @@ interface Filters {
   sort: CourseSort;
 }
 
+const SORTS: { value: CourseSort; label: string }[] = [
+  { value: 'popular', label: 'Populares' },
+  { value: 'rating', label: 'Valorados' },
+  { value: 'newest', label: 'Recientes' },
+  { value: 'price_asc', label: 'Precio ↑' },
+  { value: 'price_desc', label: 'Precio ↓' },
+];
+
 /**
- * Catálogo con búsqueda, filtros y orden (spec §1 módulo 2).
- * Patrón reactivo: signals para el estado del filtro + RxJS
- * (debounceTime + switchMap) para las peticiones — exactamente el enfoque
- * combinado que recomienda la especificación (§3.1).
+ * Catálogo rediseñado: header con wash de gradiente, buscador con icono,
+ * categorías como pills, filtros en tarjeta sticky y skeletons shimmer.
+ * Lógica intacta: signals para estado + RxJS (debounce/switchMap) para red.
  */
 @Component({
   selector: 'app-catalog',
   standalone: true,
-  imports: [RouterLink, CourseCardComponent, ReactiveFormsModule],
+  imports: [RouterLink, CourseCardComponent, IconComponent, ReactiveFormsModule, RevealDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
+    <!-- Header con gradiente -->
+    <section class="relative -mt-16 overflow-hidden bg-slate-950 pb-14 pt-28">
+      <div class="absolute inset-0 bg-mesh-hero opacity-70" aria-hidden="true"></div>
+      <div class="absolute inset-0 bg-grid-fade bg-grid opacity-30" aria-hidden="true"></div>
+      <div class="relative mx-auto max-w-7xl px-4 sm:px-6">
+        <h1 class="animate-fade-up font-heading text-3xl font-bold text-white sm:text-4xl">
+          Encuentra tu próximo <span class="bg-gradient-to-r from-brand-300 to-fuchsia-300 bg-clip-text text-transparent">curso</span>
+        </h1>
+        <p class="mt-2 animate-fade-up text-slate-300 [animation-delay:80ms]">
+          Filtra por categoría, nivel y precio. Las lecciones de muestra son gratis.
+        </p>
+
+        <!-- Buscador -->
+        <div class="relative mt-7 max-w-xl animate-fade-up [animation-delay:160ms]">
+          <span class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+            <app-icon name="search" [size]="18" />
+          </span>
+          <input
+            id="search"
+            type="search"
+            class="input !rounded-2xl !border-white/20 !bg-white/95 !py-3.5 !pl-11 !shadow-glass backdrop-blur"
+            placeholder="Buscar: Angular, NestJS, señales, diseño…"
+            aria-label="Buscar cursos"
+            [formControl]="searchControl"
+          />
+        </div>
+      </div>
+    </section>
+
     <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6">
-      <header class="mb-8">
-        <h1 class="text-3xl font-bold text-slate-900">Catálogo de cursos</h1>
-        <p class="mt-1 text-slate-500">Encuentra tu próximo curso y aprende a tu ritmo</p>
-      </header>
+      <!-- Pills de categorías -->
+      <div class="mb-8 flex flex-wrap items-center gap-2">
+        <button type="button" class="chip" [class.chip-active]="filters().category === ''" (click)="patch({ category: '' })">
+          Todas
+        </button>
+        @for (cat of categories(); track cat.id) {
+          <button type="button" class="chip" [class.chip-active]="filters().category === cat.slug" (click)="patch({ category: cat.slug })">
+            {{ cat.name }}
+          </button>
+        }
+      </div>
 
-      <div class="grid gap-8 lg:grid-cols-[260px_1fr]">
-        <!-- Filtros -->
-        <aside class="space-y-6" aria-label="Filtros del catálogo">
-          <div>
-            <label for="search" class="label">Buscar</label>
-            <input
-              id="search"
-              type="search"
-              class="input"
-              placeholder="Angular, NestJS, diseño…"
-              [formControl]="searchControl"
-            />
+      <div class="grid gap-8 lg:grid-cols-[250px_1fr]">
+        <!-- Filtros (sticky) -->
+        <aside class="space-y-5 lg:sticky lg:top-24 lg:h-fit" aria-label="Filtros del catálogo">
+          <div class="card space-y-5 p-5">
+            <fieldset>
+              <legend class="mb-2.5 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-400">
+                <app-icon name="adjustments" [size]="14" /> Nivel
+              </legend>
+              <div class="flex flex-wrap gap-1.5">
+                @for (lvl of levels; track lvl.value) {
+                  <button type="button" class="chip !px-3 !py-1 !text-xs"
+                          [class.chip-active]="filters().level === lvl.value"
+                          (click)="patch({ level: lvl.value })">
+                    {{ lvl.label }}
+                  </button>
+                }
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend class="mb-2.5 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-400">
+                <app-icon name="credit-card" [size]="14" /> Precio
+              </legend>
+              <div class="flex flex-wrap gap-1.5">
+                @for (p of prices; track p.value) {
+                  <button type="button" class="chip !px-3 !py-1 !text-xs"
+                          [class.chip-active]="filters().price === p.value"
+                          (click)="patch({ price: p.value })">
+                    {{ p.label }}
+                  </button>
+                }
+              </div>
+            </fieldset>
+
+            <button type="button" class="flex w-full items-center justify-center gap-1.5 rounded-xl border border-slate-200 py-2 text-xs font-semibold text-slate-500 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600" (click)="reset()">
+              <app-icon name="refresh" [size]="13" /> Limpiar filtros
+            </button>
           </div>
-
-          <fieldset>
-            <legend class="label">Categoría</legend>
-            <div class="space-y-1.5">
-              <label class="flex cursor-pointer items-center gap-2 text-sm text-slate-600">
-                <input type="radio" name="cat" value="" [checked]="filters().category === ''"
-                       (change)="patch({ category: '' })" class="accent-brand-600" />
-                Todas
-              </label>
-              @for (cat of categories(); track cat.id) {
-                <label class="flex cursor-pointer items-center gap-2 text-sm text-slate-600">
-                  <input type="radio" name="cat" [value]="cat.slug"
-                         [checked]="filters().category === cat.slug"
-                         (change)="patch({ category: cat.slug })" class="accent-brand-600" />
-                  {{ cat.name }}
-                </label>
-              }
-            </div>
-          </fieldset>
-
-          <fieldset>
-            <legend class="label">Nivel</legend>
-            <div class="space-y-1.5">
-              @for (lvl of levels; track lvl.value) {
-                <label class="flex cursor-pointer items-center gap-2 text-sm text-slate-600">
-                  <input type="radio" name="level" [value]="lvl.value"
-                         [checked]="filters().level === lvl.value"
-                         (change)="patch({ level: lvl.value })" class="accent-brand-600" />
-                  {{ lvl.label }}
-                </label>
-              }
-            </div>
-          </fieldset>
-
-          <fieldset>
-            <legend class="label">Precio</legend>
-            <div class="space-y-1.5">
-              @for (p of prices; track p.value) {
-                <label class="flex cursor-pointer items-center gap-2 text-sm text-slate-600">
-                  <input type="radio" name="price" [value]="p.value"
-                         [checked]="filters().price === p.value"
-                         (change)="patch({ price: p.value })" class="accent-brand-600" />
-                  {{ p.label }}
-                </label>
-              }
-            </div>
-          </fieldset>
-
-          <button type="button" class="btn-ghost btn-sm w-full" (click)="reset()">Limpiar filtros</button>
         </aside>
 
         <!-- Resultados -->
         <section>
-          <div class="mb-4 flex items-center justify-between gap-4">
+          <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
             <p class="text-sm text-slate-500" aria-live="polite">
               @if (loading()) {
-                Buscando…
+                <span class="inline-flex items-center gap-2">
+                  <span class="h-2 w-2 animate-pulse-soft rounded-full bg-brand-500"></span>
+                  Buscando cursos…
+                </span>
               } @else {
-                {{ courses().length }} curso(s){{ nextCursor() ? '+' : '' }}
+                <strong class="font-semibold text-slate-700">{{ courses().length }}</strong>
+                curso(s){{ nextCursor() ? '+' : '' }} encontrados
               }
             </p>
-            <label class="flex items-center gap-2 text-sm text-slate-600">
-              Ordenar por
-              <select class="input w-44 py-1.5" [value]="filters().sort" (change)="onSortChange($event)">
-                <option value="popular">Más populares</option>
-                <option value="rating">Mejor valorados</option>
-                <option value="newest">Más recientes</option>
-                <option value="price_asc">Precio: menor a mayor</option>
-                <option value="price_desc">Precio: mayor a menor</option>
-              </select>
-            </label>
+            <!-- Orden como control segmentado -->
+            <div class="flex rounded-xl border border-slate-200 bg-white p-1 shadow-sm" role="group" aria-label="Ordenar resultados">
+              @for (s of sorts; track s.value) {
+                <button type="button"
+                        class="rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all duration-200"
+                        [class]="filters().sort === s.value ? 'bg-gradient-to-r from-brand-600 to-violet-600 text-white shadow-sm' : 'text-slate-500 hover:text-slate-800'"
+                        (click)="patch({ sort: s.value })">
+                  {{ s.label }}
+                </button>
+              }
+            </div>
           </div>
 
           <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-            @for (course of courses(); track course.id) {
-              <app-course-card [course]="course" />
-            } @empty {
-              @if (!loading()) {
-                <div class="card col-span-full p-12 text-center">
-                  <p class="text-4xl">🔎</p>
-                  <p class="mt-3 font-medium text-slate-700">Sin resultados con esos filtros</p>
-                  <p class="mt-1 text-sm text-slate-500">Prueba a limpiar la búsqueda o cambia de categoría.</p>
+            @if (loading() && courses().length === 0) {
+              @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+                <div class="card overflow-hidden">
+                  <div class="skeleton aspect-video !rounded-none"></div>
+                  <div class="space-y-3 p-4">
+                    <div class="skeleton h-3 w-1/2"></div>
+                    <div class="skeleton h-4 w-full"></div>
+                    <div class="skeleton h-4 w-2/3"></div>
+                    <div class="skeleton h-9 w-full"></div>
+                  </div>
+                </div>
+              }
+            } @else {
+              @for (course of courses(); track course.id; let i = $index) {
+                <div appReveal [appRevealDelay]="(i % 6) * 60" class="h-full">
+                  <app-course-card [course]="course" />
+                </div>
+              } @empty {
+                <div class="card col-span-full p-14 text-center" appReveal>
+                  <span class="mx-auto flex h-16 w-16 animate-float items-center justify-center rounded-3xl bg-gradient-to-br from-brand-50 to-violet-50 text-brand-500">
+                    <app-icon name="search" [size]="28" />
+                  </span>
+                  <h3 class="mt-5 font-heading text-lg font-bold text-slate-900">Sin resultados con esos filtros</h3>
+                  <p class="mt-1.5 text-sm text-slate-500">Prueba otra palabra clave o limpia los filtros.</p>
+                  <button type="button" class="btn-secondary mt-6" (click)="reset()">
+                    <app-icon name="refresh" [size]="15" /> Limpiar filtros
+                  </button>
                 </div>
               }
             }
           </div>
 
           @if (nextCursor()) {
-            <div class="mt-8 text-center">
-              <button type="button" class="btn-secondary" [disabled]="loading()" (click)="loadMore()">
-                Cargar más cursos
+            <div class="mt-10 text-center">
+              <button type="button" class="btn-secondary btn-lg" [disabled]="loading()" (click)="loadMore()">
+                @if (loading()) {
+                  <span class="h-4 w-4 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"></span>
+                  Cargando…
+                } @else {
+                  Cargar más cursos <app-icon name="chevron-down" [size]="15" />
+                }
               </button>
             </div>
           }
@@ -151,6 +201,7 @@ export class CatalogPage {
   private readonly fb = inject(FormBuilder);
 
   protected readonly searchControl = this.fb.nonNullable.control('');
+  protected readonly sorts = SORTS;
   protected readonly levels = [
     { value: '', label: 'Todos' },
     { value: 'beginner', label: 'Principiante' },
@@ -192,7 +243,7 @@ export class CatalogPage {
   constructor() {
     this.catalog.getCategories().pipe(takeUntilDestroyed()).subscribe((c) => this.categories.set(c));
 
-    // Búsqueda con debounce (300 ms) → signal de filtros
+    // Búsqueda con debounce (300 ms) → señal de filtros
     this.searchControl.valueChanges
       .pipe(debounceTime(300), takeUntilDestroyed())
       .subscribe((value) => this.patch({ search: value }));
@@ -217,11 +268,6 @@ export class CatalogPage {
 
   protected patch(delta: Partial<Filters>): void {
     this.filters.update((f) => ({ ...f, ...delta }));
-  }
-
-  protected onSortChange(event: Event): void {
-    const value = (event.target as HTMLSelectElement).value as CourseSort;
-    this.patch({ sort: value });
   }
 
   protected reset(): void {

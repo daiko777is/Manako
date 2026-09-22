@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ToastService } from '../../core/toast/toast.service';
 import { InstructorService } from '../../core/instructor/instructor.service';
+import { IconComponent } from '../../shared/components/icon.component';
 import { formatClock } from '../../shared/format';
 
 interface EditorLesson {
@@ -50,7 +51,7 @@ interface EditorCourse {
 @Component({
   selector: 'app-course-editor',
   standalone: true,
-  imports: [RouterLink, ReactiveFormsModule],
+  imports: [RouterLink, ReactiveFormsModule, IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (course(); as c) {
@@ -158,7 +159,12 @@ interface EditorCourse {
                         {{ videoBadgeText(lesson) }}
                       </span>
                       <label class="btn-secondary btn-sm cursor-pointer">
-                        {{ uploadProgress()[lesson.id] !== undefined ? 'Subiendo ' + uploadProgress()[lesson.id] + '%' : '📤 Subir video' }}
+                        @if (uploadProgress()[lesson.id] !== undefined) {
+                          <span class="h-3.5 w-3.5 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"></span>
+                          Subiendo {{ uploadProgress()[lesson.id] }}%
+                        } @else {
+                          <app-icon name="upload" [size]="14" /> Subir video
+                        }
                         <input
                           type="file"
                           accept="video/*"
@@ -167,11 +173,11 @@ interface EditorCourse {
                           (change)="onUploadFile($event, lesson)"
                         />
                       </label>
-                      <button type="button" class="btn-ghost btn-sm" (click)="toggleLessonForm(mod.id, lesson.id)">
-                        ✏️
+                      <button type="button" class="btn-ghost btn-sm" (click)="toggleLessonForm(mod.id, lesson.id)" aria-label="Editar lección">
+                        <app-icon name="pencil" [size]="14" />
                       </button>
-                      <button type="button" class="btn-ghost btn-sm text-rose-600" (click)="deleteLesson(lesson)">
-                        🗑
+                      <button type="button" class="btn-ghost btn-sm text-rose-600 hover:bg-rose-50" (click)="deleteLesson(lesson)" aria-label="Eliminar lección">
+                        <app-icon name="trash" [size]="14" />
                       </button>
                     </div>
 
@@ -510,12 +516,12 @@ export class CourseEditorPage {
 
   protected videoBadgeText(lesson: EditorLesson): string {
     if (lesson.videoProvider === 'mux') {
-      return lesson.videoPlaybackId ? '🎞 Video listo' : lesson.videoAssetId ? '⏳ Procesando' : '⬜ Sin video';
+      return lesson.videoPlaybackId ? 'Video listo' : lesson.videoAssetId ? 'Procesando…' : 'Sin video';
     }
     if (lesson.videoProvider === 'cloudflare') {
-      return lesson.videoAssetId ? '🎞 Video listo' : '⬜ Sin video';
+      return lesson.videoAssetId ? 'Video listo' : 'Sin video';
     }
-    return lesson.videoUrl ? '🎞 Video listo' : '⬜ Sin video';
+    return lesson.videoUrl ? 'Video listo' : 'Sin video';
   }
 
   protected videoBadgeClass(lesson: EditorLesson): string {
