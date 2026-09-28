@@ -158,7 +158,7 @@ import { IconComponent } from '../../shared/components/icon.component';
   `,
 })
 export class SignupPage {
-  private readonly auth = inject(AuthService);
+  protected readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
 

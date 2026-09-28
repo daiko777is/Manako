@@ -31,9 +31,10 @@ const env = Object.fromEntries(
 const apiUrl = env['NG_APP_API_URL'] ?? 'http://localhost:3000/api/v1';
 const supabaseUrl = env['NG_APP_SUPABASE_URL'] ?? '';
 const supabaseAnonKey = env['NG_APP_SUPABASE_ANON_KEY'] ?? '';
+const demoMode = ['true', '1', 'yes'].includes((env['NG_APP_DEMO_MODE'] ?? '').toLowerCase());
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('[env] ⚠️  NG_APP_SUPABASE_URL y NG_APP_SUPABASE_ANON_KEY son obligatorios para login/registro.');
+if (!demoMode && (!supabaseUrl || !supabaseAnonKey)) {
+  console.error('[env] ⚠️  NG_APP_SUPABASE_URL y NG_APP_SUPABASE_ANON_KEY son obligatorios para login/registro (o activa NG_APP_DEMO_MODE=true).');
 }
 
 const banner = (prod) => `// ⚠️ GENERADO AUTOMÁTICAMENTE por scripts/env-to-environment.mjs desde apps/web/.env
@@ -42,6 +43,7 @@ const banner = (prod) => `// ⚠️ GENERADO AUTOMÁTICAMENTE por scripts/env-to
 
 const body = (prod, api) => `export const environment = {
   production: ${prod},
+  demoMode: ${demoMode},
   apiUrl: '${api}',
   supabaseUrl: '${supabaseUrl}',
   supabaseAnonKey: '${supabaseAnonKey}',

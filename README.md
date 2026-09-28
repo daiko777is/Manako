@@ -30,19 +30,27 @@ manako/
 
 ## 🚀 Arranque rápido
 
+### Modo demo (recomendado para probar todo sin claves externas)
+
 ```bash
-npm install                                   # instala los 3 workspaces
-# 1) Configura servicios reales (Supabase, Stripe, video):
-cp apps/api/.env.example apps/api/.env        #   y sigue docs/SETUP.md
+npm install            # solo la primera vez
+npm run demo           # Postgres (docker) + migraciones + seed + API + Web
+# → http://localhost:4200 · login con un clic (estudiante/instructor/admin)
+```
+
+Pagos simulados, video con muestras Creative Commons, auth local. Detalles y
+alternativas sin Docker: **[`docs/DEMO.md`](docs/DEMO.md)**.
+
+### Con servicios reales (Supabase + Stripe + Mux/Cloudflare)
+
+```bash
+cp apps/api/.env.example apps/api/.env        # sigue docs/SETUP.md
 cp apps/web/.env.example apps/web/.env
-# 2) Aplica el esquema en tu proyecto Supabase (supabase db push)
-# 3) Levanta ambos apps:
-npm run dev                                   # api :3000 + web :4200 (concurrently)
+supabase db push                              # aplica esquema + RLS
+npm run dev                                   # api :3000 + web :4200
 ```
 
 - Web: http://localhost:4200 · API: http://localhost:3000/api/v1 · Swagger: http://localhost:3000/api/docs
-- **¿Sin claves todavía?** Prueba con Postgres local: `docker compose up -d db`, aplica las
-  migraciones + seed (ver [`supabase/README.md`](supabase/README.md)) y usa `VIDEO_PROVIDER=direct`.
 - Guía completa con claves reales: **[`docs/SETUP.md`](docs/SETUP.md)**.
 
 ```bash

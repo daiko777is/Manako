@@ -8,6 +8,7 @@
     "apps/*"
   ],
   "scripts": {
+    "demo": "bash scripts/demo-up.sh",
     "dev": "concurrently -n api,web -c blue,green \"npm:dev:api\" \"npm:dev:web\"",
     "dev:api": "npm run start:dev -w @manako/api",
     "dev:web": "npm run start -w @manako/web",

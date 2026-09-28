@@ -26,6 +26,7 @@ import { StripeService } from './stripe.service';
 export class PaymentsService {
   private readonly logger = new Logger(PaymentsService.name);
   private readonly frontendUrl: string;
+  private readonly demoMode: boolean;
 
   constructor(
     private readonly prisma: PrismaService,
@@ -33,6 +34,7 @@ export class PaymentsService {
     config: ConfigService,
   ) {
     this.frontendUrl = config.get<string>('FRONTEND_URL') ?? 'http://localhost:4200';
+    this.demoMode = config.get<boolean>('DEMO_MODE') ?? false;
   }
 
   // ── Checkout ─────────────────────────────────────────────────────────────
@@ -59,6 +61,26 @@ export class PaymentsService {
         update: { status: 'active' },
       });
       return { enrolled: true };
+    }
+
+    // MODO DEMO → simula pago exitoso sin tocar Stripe (nunca en producción)
+    if (this.demoMode) {
+      const payment = await this.prisma.payment.create({
+        data: {
+          userId: user.id,
+          courseId,
+          amountCents: course.priceCents,
+          currency: course.currency.trim(),
+          status: 'succeeded',
+        },
+      });
+      await this.prisma.enrollment.upsert({
+        where: { userId_courseId: { userId: user.id, courseId } },
+        create: { userId: user.id, courseId, status: 'active', paymentId: payment.id },
+        update: { status: 'active', paymentId: payment.id },
+      });
+      this.logger.warn(`[DEMO] Pago simulado: user=${user.id} course=${courseId}`);
+      return { enrolled: true, demo: true };
     }
 
     // Reutilizar sesión pendiente si existe (evita sesiones huérfanas)
@@ -250,13 +272,15 @@ export class PaymentsService {
     if (payment.status === 'refunded') {
       throw new ConflictException('El pago ya está reembolsado');
     }
-    if (!payment.stripePaymentIntentId) {
+    if (!this.demoMode && !payment.stripePaymentIntentId) {
       throw new BadRequestException('El pago no tiene payment intent asociado');
     }
 
-    await this.stripeService.stripe.refunds.create({
-      payment_intent: payment.stripePaymentIntentId,
-    });
+    if (!this.demoMode && payment.stripePaymentIntentId) {
+      await this.stripeService.stripe.refunds.create({
+        payment_intent: payment.stripePaymentIntentId,
+      });
+    }
     // El estado final lo fija el webhook charge.refunded (fuente de verdad),
     // pero adelantamos el estado local para reflejar la operación de inmediato.
     const updated = await this.prisma.payment.update({

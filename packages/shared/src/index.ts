@@ -196,6 +196,8 @@ export interface CheckoutResponse {
   enrolled: boolean;
   /** URL de Stripe Checkout cuando hay pago pendiente. */
   url?: string;
+  /** true cuando el pago fue simulado por el modo demo. */
+  demo?: boolean;
 }
 
 export interface PaymentSummary {

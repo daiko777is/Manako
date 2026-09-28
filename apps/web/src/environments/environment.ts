@@ -2,6 +2,7 @@
 // (ver scripts/env-to-environment.mjs). Valores por defecto de placeholder:
 export const environment = {
   production: true,
+  demoMode: false,
   apiUrl: 'http://localhost:3000/api/v1',
   supabaseUrl: 'https://TU-REF.supabase.co',
   supabaseAnonKey: 'TU-ANON-KEY',

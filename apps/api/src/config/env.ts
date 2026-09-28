@@ -6,6 +6,8 @@
 export interface ApiEnv {
   PORT: number;
   NODE_ENV: string;
+  /** Modo demo: auth simulada + checkout sin Stripe. NUNCA en producción real. */
+  DEMO_MODE: boolean;
   CORS_ORIGINS: string;
   FRONTEND_URL: string;
   DATABASE_URL: string;
@@ -64,20 +66,28 @@ function opt(raw: Record<string, unknown>, key: string): string | undefined {
 }
 
 export function validateEnv(raw: Record<string, unknown>): ApiEnv {
+  const demoMode = String(raw['DEMO_MODE'] ?? '').toLowerCase() === 'true';
+
   const env: ApiEnv = {
     PORT: num(raw, 'PORT', 3000),
     NODE_ENV: str(raw, 'NODE_ENV', 'development'),
+    DEMO_MODE: demoMode,
     CORS_ORIGINS: str(raw, 'CORS_ORIGINS', 'http://localhost:4200'),
     FRONTEND_URL: str(raw, 'FRONTEND_URL', 'http://localhost:4200'),
     DATABASE_URL: str(raw, 'DATABASE_URL'),
     DIRECT_URL: opt(raw, 'DIRECT_URL'),
-    SUPABASE_URL: str(raw, 'SUPABASE_URL'),
-    SUPABASE_SERVICE_ROLE_KEY: str(raw, 'SUPABASE_SERVICE_ROLE_KEY'),
+    // En modo demo estas claves no se usan: se aceptan placeholders
+    SUPABASE_URL: str(raw, 'SUPABASE_URL', demoMode ? 'http://localhost' : undefined),
+    SUPABASE_SERVICE_ROLE_KEY: str(
+      raw,
+      'SUPABASE_SERVICE_ROLE_KEY',
+      demoMode ? 'demo-service-role-key' : undefined,
+    ),
     SUPABASE_JWT_SECRET: opt(raw, 'SUPABASE_JWT_SECRET'),
     SUPABASE_JWKS_URL: opt(raw, 'SUPABASE_JWKS_URL'),
     SUPABASE_JWT_ISSUER: opt(raw, 'SUPABASE_JWT_ISSUER'),
-    STRIPE_SECRET_KEY: str(raw, 'STRIPE_SECRET_KEY'),
-    STRIPE_WEBHOOK_SECRET: str(raw, 'STRIPE_WEBHOOK_SECRET'),
+    STRIPE_SECRET_KEY: str(raw, 'STRIPE_SECRET_KEY', demoMode ? 'sk_test_demo_mode' : undefined),
+    STRIPE_WEBHOOK_SECRET: str(raw, 'STRIPE_WEBHOOK_SECRET', demoMode ? 'whsec_demo_mode' : undefined),
     PLATFORM_FEE_PERCENT: num(raw, 'PLATFORM_FEE_PERCENT', 30),
     VIDEO_PROVIDER: (opt(raw, 'VIDEO_PROVIDER') ?? 'direct') as ApiEnv['VIDEO_PROVIDER'],
     PLAYBACK_URL_TTL_SECONDS: num(raw, 'PLAYBACK_URL_TTL_SECONDS', 600),
@@ -97,6 +107,18 @@ export function validateEnv(raw: Record<string, unknown>): ApiEnv {
     THROTTLE_LIMIT: num(raw, 'THROTTLE_LIMIT', 100),
     LOG_FORMAT: str(raw, 'LOG_FORMAT', 'json'),
   };
+
+  if (demoMode) {
+    // En demo la API firma sus propios JWT (mismo formato que Supabase)
+    if (!env.SUPABASE_JWT_SECRET) {
+      env.SUPABASE_JWT_SECRET = 'manako-demo-jwt-secret-min-32-chars';
+    }
+    // eslint-disable-next-line no-console
+    console.warn(
+      '[env] ⚠️  DEMO_MODE=true — autenticación simulada y pagos sin Stripe. NO usar en producción.',
+    );
+    return env;
+  }
 
   if (!env.SUPABASE_JWT_SECRET && !env.SUPABASE_JWKS_URL) {
     throw new Error('[env] Debes definir SUPABASE_JWT_SECRET o SUPABASE_JWKS_URL para validar los JWT');

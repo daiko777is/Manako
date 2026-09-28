@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Param, ParseUUIDPipe, Patch, Post, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import type { AdminMetrics, PaymentSummary, UserRole } from '@manako/shared';
 import { CurrentUser } from '../common/current-user.decorator';
@@ -62,6 +62,7 @@ export class AdminController {
   }
 
   @Post('payments/:id/refund')
+  @HttpCode(200)
   @ApiOperation({ summary: 'Reembolsar pago (revoca la inscripción)' })
   refund(@CurrentUser() user: RequestUser, @Param('id', ParseUUIDPipe) id: string): Promise<PaymentSummary> {
     return this.payments.refund(user.id, id);
