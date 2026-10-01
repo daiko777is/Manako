@@ -222,7 +222,7 @@ import { RevealDirective } from '../../shared/components/reveal.directive';
                               <span class="badge-green ml-2 !text-[10px]">muestra gratis</span>
                             }
                           </span>
-                          <span class="flex items-center gap-1 text-xs text-slate-400">
+                          <span class="flex items-center gap-1 text-xs text-slate-500">
                             <app-icon name="clock" [size]="12" /> {{ clock(lesson.durationSeconds) }}
                           </span>
                           @if (lesson.isPreview || lesson.unlocked) {

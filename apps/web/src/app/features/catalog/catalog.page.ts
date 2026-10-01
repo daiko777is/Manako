@@ -15,6 +15,8 @@ interface Filters {
   level: string;
   price: string; // '' | 'free' | 'paid'
   sort: CourseSort;
+  /** Contador para forzar re-consulta (retry tras error). */
+  tick: number;
 }
 
 const SORTS: { value: CourseSort; label: string }[] = [
@@ -81,7 +83,7 @@ const SORTS: { value: CourseSort; label: string }[] = [
         <aside class="space-y-5 lg:sticky lg:top-24 lg:h-fit" aria-label="Filtros del catálogo">
           <div class="card space-y-5 p-5">
             <fieldset>
-              <legend class="mb-2.5 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-400">
+              <legend class="mb-2.5 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500">
                 <app-icon name="adjustments" [size]="14" /> Nivel
               </legend>
               <div class="flex flex-wrap gap-1.5">
@@ -96,7 +98,7 @@ const SORTS: { value: CourseSort; label: string }[] = [
             </fieldset>
 
             <fieldset>
-              <legend class="mb-2.5 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-400">
+              <legend class="mb-2.5 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500">
                 <app-icon name="credit-card" [size]="14" /> Precio
               </legend>
               <div class="flex flex-wrap gap-1.5">
@@ -156,6 +158,17 @@ const SORTS: { value: CourseSort; label: string }[] = [
                   </div>
                 </div>
               }
+            } @else if (loadError()) {
+              <div class="card col-span-full p-14 text-center" appReveal>
+                <span class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-50 text-rose-500">
+                  <app-icon name="bolt" [size]="26" />
+                </span>
+                <h3 class="mt-5 font-heading text-lg font-bold text-slate-900">No pudimos cargar el catálogo</h3>
+                <p class="mt-1.5 text-sm text-slate-500">Revisa tu conexión o inténtalo de nuevo.</p>
+                <button type="button" class="btn-secondary mt-6" (click)="retry()">
+                  <app-icon name="refresh" [size]="15" /> Reintentar
+                </button>
+              </div>
             } @else {
               @for (course of courses(); track course.id; let i = $index) {
                 <div appReveal [appRevealDelay]="(i % 6) * 60" class="h-full">
@@ -218,15 +231,18 @@ export class CatalogPage {
     level: '',
     price: '',
     sort: 'popular',
+    tick: 0,
   });
 
   protected readonly categories = signal<Category[]>([]);
   protected readonly courses = signal<CourseSummary[]>([]);
   protected readonly nextCursor = signal<string | null>(null);
   protected readonly loading = signal(true);
+  protected readonly loadError = signal(false);
 
   private readonly params = computed<CourseQuery>(() => {
     const f = this.filters();
+    void f.tick; // el tick fuerza re-emisión para el retry
     return {
       search: f.search || undefined,
       category: f.category || undefined,
@@ -259,9 +275,17 @@ export class CatalogPage {
           this.courses.set(page.data);
           this.nextCursor.set(page.nextCursor);
           this.loading.set(false);
+          this.loadError.set(false);
         },
-        error: () => this.loading.set(false),
+        error: () => {
+          this.loading.set(false);
+          this.loadError.set(true);
+        },
       });
+  }
+
+  protected retry(): void {
+    this.filters.update((f) => ({ ...f, tick: f.tick + 1 }));
   }
 
   protected patch(delta: Partial<Filters>): void {
@@ -270,7 +294,7 @@ export class CatalogPage {
 
   protected reset(): void {
     this.searchControl.setValue('', { emitEvent: false });
-    this.filters.set({ search: '', category: '', level: '', price: '', sort: 'popular' });
+    this.filters.set({ search: '', category: '', level: '', price: '', sort: 'popular', tick: this.filters().tick + 1 });
   }
 
   protected loadMore(): void {

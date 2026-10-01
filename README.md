@@ -18,9 +18,11 @@ manako/
 │   └── seed.sql        # Datos demo (desarrollo)
 ├── docs/
 │   ├── SETUP.md                            # 🔑 Conexión a Supabase/Stripe/Mux reales
+│   ├── DEMO.md                             # 🎓 Modo demo funcional sin servicios externos
 │   ├── esquema-base-de-datos.md            # ERD completo + reglas + matriz RLS
 │   ├── contrato-instructor-marketplace.md  # Acuerdo de instructor desglosado
 │   └── arquitectura.html                   # Diagramas visuales (abrir en navegador)
+├── design-system/manako/                   # Design system persistido (MASTER + overrides)
 ├── devops/github-actions-ci.yml            # Pipeline CI/CD (spec §12) — cópialo a
 │                                           # .github/workflows/ci.yml para activarlo
 └── docker-compose.yml                      # Postgres + Redis + API para local

@@ -57,7 +57,7 @@ const ROLE_LABEL: Record<UserRole, string> = {
             }
           </div>
         </div>
-        <p class="mt-4 text-center text-xs text-slate-400">— o usa el formulario con cualquier cuenta demo —</p>
+        <p class="mt-4 text-center text-xs text-slate-500">— o usa el formulario con cualquier cuenta demo —</p>
       }
 
       <form [formGroup]="form" (ngSubmit)="submit()" class="card mt-6 space-y-4 p-6" novalidate>
@@ -68,8 +68,13 @@ const ROLE_LABEL: Record<UserRole, string> = {
               <app-icon name="envelope" [size]="16" />
             </span>
             <input id="email" type="email" formControlName="email" class="input !pl-10"
-                   placeholder="tu@email.com" autocomplete="email" required />
+                   placeholder="tu@email.com" autocomplete="email" required
+                   [attr.aria-describedby]="emailError() ? 'email-error' : null"
+                   [attr.aria-invalid]="emailError() ? true : null" />
           </div>
+          @if (emailError(); as msg) {
+            <p class="field-error" id="email-error" role="alert">{{ msg }}</p>
+          }
         </div>
         <div>
           <label for="password" class="label">
@@ -84,8 +89,13 @@ const ROLE_LABEL: Record<UserRole, string> = {
             </span>
             <input id="password" type="password" formControlName="password" class="input !pl-10"
                    placeholder="••••••••" autocomplete="current-password"
-                   [required]="!auth.demoMode" />
+                   [required]="!auth.demoMode"
+                   [attr.aria-describedby]="passwordError() ? 'password-error' : null"
+                   [attr.aria-invalid]="passwordError() ? true : null" />
           </div>
+          @if (passwordError(); as msg) {
+            <p class="field-error" id="password-error" role="alert">{{ msg }}</p>
+          }
         </div>
 
         @if (error()) {
@@ -105,7 +115,7 @@ const ROLE_LABEL: Record<UserRole, string> = {
 
         @if (!auth.demoMode) {
           <div class="relative py-1 text-center">
-            <span class="relative z-10 bg-white px-3 text-xs font-medium uppercase tracking-wider text-slate-400">o</span>
+            <span class="relative z-10 bg-white px-3 text-xs font-medium uppercase tracking-wider text-slate-500">o</span>
             <span class="absolute inset-x-0 top-1/2 h-px bg-slate-200" aria-hidden="true"></span>
           </div>
 
@@ -136,6 +146,22 @@ export class LoginPage {
     email: ['', [Validators.required, Validators.email]],
     password: [''],
   });
+
+  /** Errores inline: visibles al tocar el campo (validación on-blur, ux §8). */
+  protected emailError(): string | null {
+    const c = this.form.controls.email;
+    if (c.valid || !c.touched) return null;
+    if (c.hasError('required')) return 'El email es obligatorio';
+    if (c.hasError('email')) return 'Introduce un email válido';
+    return null;
+  }
+
+  protected passwordError(): string | null {
+    const c = this.form.controls.password;
+    if (c.valid || !c.touched || this.auth.demoMode) return null;
+    if (c.hasError('required')) return 'La contraseña es obligatoria';
+    return null;
+  }
 
   protected readonly roleLabel = (role: UserRole): string => ROLE_LABEL[role] ?? role;
 

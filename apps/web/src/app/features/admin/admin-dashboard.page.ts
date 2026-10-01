@@ -53,7 +53,7 @@ type Tab = 'metrics' | 'users' | 'courses' | 'payments';
                 <app-icon name="users" [size]="18" />
               </span>
               <p class="mt-3 font-heading text-3xl font-bold text-slate-900 tnum">{{ m.users.total }}</p>
-              <p class="mt-1 text-xs font-semibold uppercase tracking-wider text-slate-400">Usuarios</p>
+              <p class="mt-1 text-xs font-semibold uppercase tracking-wider text-slate-500">Usuarios</p>
               <p class="mt-2 text-xs text-slate-500">
                 {{ m.users.students }} estudiantes · {{ m.users.instructors }} instructores · {{ m.users.admins }} admins
               </p>
@@ -63,7 +63,7 @@ type Tab = 'metrics' | 'users' | 'courses' | 'payments';
                 <app-icon name="academic-cap" [size]="18" />
               </span>
               <p class="mt-3 font-heading text-3xl font-bold text-slate-900 tnum">{{ m.courses.total }}</p>
-              <p class="mt-1 text-xs font-semibold uppercase tracking-wider text-slate-400">Cursos</p>
+              <p class="mt-1 text-xs font-semibold uppercase tracking-wider text-slate-500">Cursos</p>
               <p class="mt-2 text-xs text-slate-500">{{ m.courses.published }} publicados · {{ m.courses.drafts }} borradores</p>
             </div>
             <div class="card p-5">
@@ -71,7 +71,7 @@ type Tab = 'metrics' | 'users' | 'courses' | 'payments';
                 <app-icon name="book" [size]="18" />
               </span>
               <p class="mt-3 font-heading text-3xl font-bold text-slate-900 tnum">{{ m.enrollmentsActive }}</p>
-              <p class="mt-1 text-xs font-semibold uppercase tracking-wider text-slate-400">Inscripciones activas</p>
+              <p class="mt-1 text-xs font-semibold uppercase tracking-wider text-slate-500">Inscripciones activas</p>
               <p class="mt-2 text-xs text-slate-500">{{ m.lessonsCompletedToday }} lecciones completadas hoy</p>
             </div>
             <div class="card p-5">
@@ -79,7 +79,7 @@ type Tab = 'metrics' | 'users' | 'courses' | 'payments';
                 <app-icon name="dollar" [size]="18" />
               </span>
               <p class="mt-3 font-heading text-3xl font-bold text-slate-900 tnum">{{ formatMoney(m.revenueCents) }}</p>
-              <p class="mt-1 text-xs font-semibold uppercase tracking-wider text-slate-400">Ingresos brutos</p>
+              <p class="mt-1 text-xs font-semibold uppercase tracking-wider text-slate-500">Ingresos brutos</p>
               <p class="mt-2 text-xs text-slate-500">Reembolsado: {{ formatMoney(m.refundedCents) }}</p>
             </div>
           </div>
@@ -127,9 +127,9 @@ type Tab = 'metrics' | 'users' | 'courses' | 'payments';
                       <option value="admin">admin</option>
                     </select>
                   </td>
-                  <td class="px-4 py-3 text-slate-500">{{ formatDate(u.createdAt) }}</td>
-                  <td class="px-4 py-3 text-right text-slate-600">{{ u.enrollments }}</td>
-                  <td class="px-4 py-3 text-right text-slate-600">{{ u.coursesCreated }}</td>
+                  <td class="px-4 py-3 text-slate-500 tnum">{{ formatDate(u.createdAt) }}</td>
+                  <td class="px-4 py-3 text-right text-slate-600 tnum">{{ u.enrollments }}</td>
+                  <td class="px-4 py-3 text-right text-slate-600 tnum">{{ u.coursesCreated }}</td>
                 </tr>
               } @empty {
                 <tr><td colspan="5" class="px-4 py-10 text-center text-slate-400">Sin usuarios</td></tr>
@@ -160,7 +160,7 @@ type Tab = 'metrics' | 'users' | 'courses' | 'payments';
                     <p class="text-xs text-slate-400">/cursos/{{ c.slug }}</p>
                   </td>
                   <td class="px-4 py-3 text-slate-500">{{ c.instructor?.fullName ?? '—' }}</td>
-                  <td class="px-4 py-3 text-slate-600">{{ formatMoney(c.priceCents, c.currency) }}</td>
+                  <td class="px-4 py-3 text-right text-slate-600 tnum">{{ formatMoney(c.priceCents, c.currency) }}</td>
                   <td class="px-4 py-3">
                     <span [class]="c.status === 'published' ? 'badge-green' : c.status === 'draft' ? 'badge-amber' : 'badge-slate'">
                       {{ statusLabel(c.status) }}
@@ -206,13 +206,13 @@ type Tab = 'metrics' | 'users' | 'courses' | 'payments';
             <tbody class="divide-y divide-slate-100">
               @for (p of payments(); track p.id) {
                 <tr>
-                  <td class="px-4 py-3 text-slate-500">{{ formatDate(p.createdAt) }}</td>
+                  <td class="px-4 py-3 text-slate-500 tnum">{{ formatDate(p.createdAt) }}</td>
                   <td class="px-4 py-3">
                     <p class="text-slate-700">{{ p.user?.fullName ?? '—' }}</p>
                     <p class="text-xs text-slate-400">{{ p.user?.email }}</p>
                   </td>
                   <td class="px-4 py-3 text-slate-600">{{ p.course?.title ?? p.courseId }}</td>
-                  <td class="px-4 py-3 font-medium text-slate-800">{{ formatMoney(p.amountCents, p.currency) }}</td>
+                  <td class="px-4 py-3 text-right font-semibold text-slate-800 tnum">{{ formatMoney(p.amountCents, p.currency) }}</td>
                   <td class="px-4 py-3">
                     <span
                       [class]="

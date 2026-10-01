@@ -78,8 +78,13 @@ import { IconComponent } from '../../shared/components/icon.component';
                     <app-icon name="user" [size]="17" />
                   </span>
                   <input id="fullName" type="text" formControlName="fullName" class="input !pl-11"
-                         placeholder="Ana García" autocomplete="name" required />
+                         placeholder="Ana García" autocomplete="name" required
+                         [attr.aria-describedby]="fieldError('fullName') ? 'fullName-error' : null"
+                         [attr.aria-invalid]="fieldError('fullName') ? true : null" />
                 </div>
+                @if (fieldError('fullName'); as msg) {
+                  <p class="field-error" id="fullName-error" role="alert">{{ msg }}</p>
+                }
               </div>
               <div>
                 <label for="email" class="label">Email</label>
@@ -88,8 +93,13 @@ import { IconComponent } from '../../shared/components/icon.component';
                     <app-icon name="envelope" [size]="17" />
                   </span>
                   <input id="email" type="email" formControlName="email" class="input !pl-11"
-                         placeholder="tu@email.com" autocomplete="email" required />
+                         placeholder="tu@email.com" autocomplete="email" required
+                         [attr.aria-describedby]="fieldError('email') ? 'email-error' : null"
+                         [attr.aria-invalid]="fieldError('email') ? true : null" />
                 </div>
+                @if (fieldError('email'); as msg) {
+                  <p class="field-error" id="email-error" role="alert">{{ msg }}</p>
+                }
               </div>
               <div>
                 <label for="password" class="label">Contraseña</label>
@@ -98,8 +108,13 @@ import { IconComponent } from '../../shared/components/icon.component';
                     <app-icon name="lock" [size]="17" />
                   </span>
                   <input id="password" type="password" formControlName="password" class="input !pl-11"
-                         placeholder="Mínimo 8 caracteres" autocomplete="new-password" required />
+                         placeholder="Mínimo 8 caracteres" autocomplete="new-password" required
+                         [attr.aria-describedby]="fieldError('password') ? 'password-error' : null"
+                         [attr.aria-invalid]="fieldError('password') ? true : null" />
                 </div>
+                @if (fieldError('password'); as msg) {
+                  <p class="field-error" id="password-error" role="alert">{{ msg }}</p>
+                }
                 <!-- Medidor de fuerza de contraseña -->
                 <div class="mt-2 flex items-center gap-2">
                   <div class="flex h-1.5 flex-1 gap-1" aria-hidden="true">
@@ -113,7 +128,8 @@ import { IconComponent } from '../../shared/components/icon.component';
               </div>
 
               <label class="flex cursor-pointer items-start gap-2.5 text-xs leading-relaxed text-slate-500">
-                <input type="checkbox" formControlName="terms" class="mt-0.5 h-4 w-4 rounded accent-brand-600" required />
+                <input type="checkbox" formControlName="terms" class="mt-0.5 h-4 w-4 rounded accent-brand-600" required
+                       [attr.aria-describedby]="fieldError('terms') ? 'terms-error' : null" />
                 <span>
                   Acepto los
                   <a routerLink="/legal/terminos" class="font-semibold text-brand-700 underline decoration-dotted underline-offset-2" target="_blank">términos y condiciones</a>
@@ -121,6 +137,10 @@ import { IconComponent } from '../../shared/components/icon.component';
                   <a routerLink="/legal/privacidad" class="font-semibold text-brand-700 underline decoration-dotted underline-offset-2" target="_blank">política de privacidad</a>.
                 </span>
               </label>
+
+              @if (fieldError('terms'); as msg) {
+                <p class="field-error" id="terms-error" role="alert">{{ msg }}</p>
+              }
 
               @if (error()) {
                 <p class="flex animate-fade-up items-center gap-2 rounded-xl bg-rose-50 px-4 py-3 text-sm text-rose-700 ring-1 ring-inset ring-rose-600/15" role="alert">
@@ -138,7 +158,7 @@ import { IconComponent } from '../../shared/components/icon.component';
               </button>
 
               <div class="relative py-1 text-center">
-                <span class="relative z-10 bg-slate-50 px-3 text-xs font-medium uppercase tracking-wider text-slate-400">o</span>
+                <span class="relative z-10 bg-slate-50 px-3 text-xs font-medium uppercase tracking-wider text-slate-500">o</span>
                 <span class="absolute inset-x-0 top-1/2 h-px bg-slate-200" aria-hidden="true"></span>
               </div>
 
@@ -180,6 +200,22 @@ export class SignupPage {
     password: ['', [Validators.required, Validators.minLength(8)]],
     terms: [false, Validators.requiredTrue],
   });
+
+  /** Errores inline por campo (visibles on-blur; ux §8: error junto al input). */
+  protected fieldError(name: 'fullName' | 'email' | 'password' | 'terms'): string | null {
+    const c = this.form.controls[name];
+    if (c.valid || !c.touched) return null;
+    if (c.hasError('required')) {
+      return name === 'terms' ? 'Debes aceptar los términos para continuar' : 'Este campo es obligatorio';
+    }
+    if (c.hasError('email')) return 'Introduce un email válido';
+    if (c.hasError('minlength')) {
+      return name === 'password'
+        ? 'Mínimo 8 caracteres'
+        : 'Introduce al menos 2 caracteres';
+    }
+    return null;
+  }
 
   /** Fuerza de contraseña (0-4) para el medidor visual. */
   protected passwordStrength(): number {

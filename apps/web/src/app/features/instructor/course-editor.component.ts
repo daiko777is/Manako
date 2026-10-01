@@ -56,7 +56,7 @@ interface EditorCourse {
   template: `
     @if (course(); as c) {
       <div class="mx-auto max-w-5xl px-4 py-10 sm:px-6">
-        <nav class="mb-4 text-sm text-slate-400">
+        <nav class="mb-4 text-sm text-slate-500">
           <a routerLink="/instructor" class="hover:text-brand-700">← Panel de instructor</a>
         </nav>
 
@@ -125,7 +125,7 @@ interface EditorCourse {
         <section class="space-y-4">
           <div class="flex items-center justify-between">
             <h2 class="font-bold text-slate-900">Currículo</h2>
-            <span class="text-xs text-slate-400">
+            <span class="text-xs text-slate-500">
               El desbloqueo es secuencial: los alumnos avanzan en orden (los previews son libres).
             </span>
           </div>
@@ -154,7 +154,7 @@ interface EditorCourse {
                           <span class="badge-green ml-2">muestra</span>
                         }
                       </span>
-                      <span class="text-xs text-slate-400">{{ clock(lesson.durationSeconds) }}</span>
+                      <span class="text-xs text-slate-500">{{ clock(lesson.durationSeconds) }}</span>
                       <span [class]="videoBadgeClass(lesson)" class="badge">
                         {{ videoBadgeText(lesson) }}
                       </span>
@@ -173,10 +173,10 @@ interface EditorCourse {
                           (change)="onUploadFile($event, lesson)"
                         />
                       </label>
-                      <button type="button" class="btn-ghost btn-sm" (click)="toggleLessonForm(mod.id, lesson.id)" aria-label="Editar lección">
+                      <button type="button" class="btn-icon" (click)="toggleLessonForm(mod.id, lesson.id)" aria-label="Editar lección">
                         <app-icon name="pencil" [size]="14" />
                       </button>
-                      <button type="button" class="btn-ghost btn-sm text-rose-600 hover:bg-rose-50" (click)="deleteLesson(lesson)" aria-label="Eliminar lección">
+                      <button type="button" class="btn-icon text-rose-600 hover:bg-rose-50" (click)="deleteLesson(lesson)" aria-label="Eliminar lección">
                         <app-icon name="trash" [size]="14" />
                       </button>
                     </div>

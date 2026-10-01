@@ -63,17 +63,17 @@ import { RevealDirective } from '../../shared/components/reveal.directive';
 
                 <dl class="grid grid-cols-3 gap-4 text-center">
                   <div>
-                    <dt class="text-xs text-slate-400">Inscritos</dt>
+                    <dt class="text-xs text-slate-500">Inscritos</dt>
                     <dd class="text-lg font-bold text-slate-900">{{ course.totalEnrollments }}</dd>
                   </div>
                   <div>
-                    <dt class="text-xs text-slate-400">Ingresos</dt>
+                    <dt class="text-xs text-slate-500">Ingresos</dt>
                     <dd class="text-lg font-bold text-slate-900">
                       {{ formatMoney(course.revenueCents, course.currency) }}
                     </dd>
                   </div>
                   <div>
-                    <dt class="text-xs text-slate-400">Rating</dt>
+                    <dt class="text-xs text-slate-500">Rating</dt>
                     <dd class="text-lg font-bold text-slate-900">
                       {{ course.reviewsCount > 0 ? course.avgRating.toFixed(1) + ' ⭐' : '—' }}
                     </dd>
@@ -154,7 +154,7 @@ import { RevealDirective } from '../../shared/components/reveal.directive';
                   ></div>
                 </div>
                 <span class="w-10 text-right text-xs text-slate-500">{{ row.retentionPercent }}%</span>
-                <span class="w-24 text-right text-xs text-slate-400">
+                <span class="w-24 text-right text-xs text-slate-500">
                   {{ formatDuration(row.avgWatchedSeconds) }} prom.
                 </span>
               </div>

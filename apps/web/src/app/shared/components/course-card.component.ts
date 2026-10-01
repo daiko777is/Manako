@@ -44,12 +44,12 @@ import { IconComponent } from './icon.component';
 
       <!-- Cuerpo -->
       <div class="flex flex-1 flex-col p-4">
-        <div class="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+        <div class="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
           @if (course.category) {
             <span class="text-brand-700">{{ course.category.name }}</span>
             <span aria-hidden="true">·</span>
           }
-          <span>{{ levelLabel(course.level) }}</span>
+          <span class="text-slate-500">{{ levelLabel(course.level) }}</span>
         </div>
 
         <h3 class="mt-1.5 line-clamp-2 font-heading text-[15px] font-semibold leading-snug text-slate-900 group-hover:text-brand-700">

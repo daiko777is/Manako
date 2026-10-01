@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import type { Category, CourseSummary } from '@manako/shared';
@@ -240,6 +240,19 @@ const STEPS = [
             </div>
           }
         </div>
+      } @else if (featuredError()) {
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div class="card col-span-full p-14 text-center">
+            <span class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-rose-50 text-rose-500">
+              <app-icon name="bolt" [size]="22" />
+            </span>
+            <h3 class="mt-4 font-heading text-lg font-semibold text-slate-900">No pudimos cargar los cursos</h3>
+            <p class="mt-1 text-sm text-slate-500">Revisa tu conexión o inténtalo de nuevo.</p>
+            <button type="button" class="btn-secondary mt-6" (click)="retryFeatured()">
+              <app-icon name="refresh" [size]="15" /> Reintentar
+            </button>
+          </div>
+        </div>
       } @else {
         <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           @for (course of featured(); track course.id; let i = $index) {
@@ -287,10 +300,12 @@ const STEPS = [
 })
 export class HomePage {
   private readonly catalog = inject(CatalogService);
+  private readonly destroyRef = inject(DestroyRef);
   protected readonly auth = inject(AuthService);
 
   protected readonly featured = signal<CourseSummary[]>([]);
   protected readonly featuredLoading = signal(true);
+  protected readonly featuredError = signal(false);
   protected readonly categories = signal<Category[]>([]);
   protected readonly stats = signal({ courses: 0, coursesSuffix: '0', lessons: 0, enrollments: 0 });
 
@@ -298,26 +313,38 @@ export class HomePage {
   protected readonly steps = STEPS;
 
   constructor() {
+    this.loadFeatured();
+    this.loadStats();
+
+    this.catalog
+      .getCategories()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((cats) => this.categories.set(cats));
+  }
+
+  private loadFeatured(): void {
+    this.featuredLoading.set(true);
+    this.featuredError.set(false);
     this.catalog
       .getFeatured(8)
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (courses) => {
           this.featured.set(courses);
           this.featuredLoading.set(false);
         },
-        error: () => this.featuredLoading.set(false),
+        error: () => {
+          this.featuredLoading.set(false);
+          this.featuredError.set(true);
+        },
       });
+  }
 
-    this.catalog
-      .getCategories()
-      .pipe(takeUntilDestroyed())
-      .subscribe((cats) => this.categories.set(cats));
-
-    // Cifras agregadas reales del catálogo (data drives the UI — ui-craft)
+  /** Cifras agregadas reales del catálogo (data drives the UI — ui-craft). */
+  private loadStats(): void {
     this.catalog
       .getCourses({ limit: 50 })
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((page) => {
         const courses = page.data;
         this.stats.set({
@@ -327,5 +354,9 @@ export class HomePage {
           enrollments: courses.reduce((acc, c) => acc + c.totalEnrollments, 0),
         });
       });
+  }
+
+  protected retryFeatured(): void {
+    this.loadFeatured();
   }
 }

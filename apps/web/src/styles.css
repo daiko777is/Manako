@@ -109,8 +109,19 @@ h1, h2, h3, .font-heading {
   .btn-danger {
     @apply btn bg-rose-600 text-white hover:bg-rose-700;
   }
-  .btn-sm { @apply px-3 py-1.5 text-xs; }
+  /* Touch targets ≥36px (WCAG 2.5.8 AA superado; separación ≥8px vía gap) */
+  .btn-sm { @apply px-3 py-2 text-xs min-h-9; }
   .btn-lg { @apply px-5 py-3 text-[15px]; }
+
+  /* Botón icon-only: área táctil cuadrada */
+  .btn-icon {
+    @apply btn-ghost !px-0 h-9 w-9 justify-center;
+  }
+
+  /* Error de campo inline (error junto al input + aria-describedby) */
+  .field-error {
+    @apply mt-1.5 flex items-center gap-1.5 text-xs font-medium text-rose-600;
+  }
 
   /* Superficies — hairline border + valor, sin sombras por defecto */
   .card {
@@ -141,9 +152,9 @@ h1, h2, h3, .font-heading {
   .badge-brand  { @apply badge bg-brand-50 text-brand-700 ring-1 ring-inset ring-brand-600/15; }
   .badge-violet { @apply badge bg-violet-50 text-violet-700 ring-1 ring-inset ring-violet-600/15; }
 
-  /* Filtros tipo pill — activo = relleno sólido, no degradado */
+  /* Filtros tipo pill — activo = relleno sólido, no degradado. min-h 36px: target táctil */
   .chip {
-    @apply inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-slate-200 bg-white
+    @apply inline-flex min-h-9 cursor-pointer items-center gap-1.5 rounded-full border border-slate-200 bg-white
            px-3.5 py-1.5 text-sm font-medium text-slate-600 transition-colors duration-150
            hover:border-slate-300 hover:text-slate-900;
   }

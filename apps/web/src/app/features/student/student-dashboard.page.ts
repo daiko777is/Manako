@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import type { EnrollmentSummary } from '@manako/shared';
@@ -83,6 +83,17 @@ import { levelLabel } from '../../shared/format';
             </div>
           }
         </div>
+      } @else if (loadError()) {
+        <div class="card p-16 text-center" appReveal>
+          <span class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-50 text-rose-500">
+            <app-icon name="bolt" [size]="26" />
+          </span>
+          <h2 class="mt-5 font-heading text-xl font-bold text-slate-900">No pudimos cargar tus cursos</h2>
+          <p class="mt-2 text-sm text-slate-500">Revisa tu conexión o inténtalo de nuevo.</p>
+          <button type="button" class="btn-secondary mt-6" (click)="retry()">
+            <app-icon name="refresh" [size]="15" /> Reintentar
+          </button>
+        </div>
       } @else {
         <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           @for (enrollment of enrollments(); track enrollment.id; let i = $index) {
@@ -149,10 +160,12 @@ import { levelLabel } from '../../shared/format';
 })
 export class StudentDashboardPage {
   private readonly enrollmentsApi = inject(EnrollmentsService);
+  private readonly destroyRef = inject(DestroyRef);
   protected readonly auth = inject(AuthService);
 
   protected readonly enrollments = signal<EnrollmentSummary[]>([]);
   protected readonly loading = signal(true);
+  protected readonly loadError = signal(false);
 
   protected readonly levelLabel = levelLabel;
 
@@ -173,15 +186,28 @@ export class StudentDashboardPage {
   }
 
   constructor() {
+    this.load();
+  }
+
+  private load(): void {
+    this.loading.set(true);
+    this.loadError.set(false);
     this.enrollmentsApi
       .mine()
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (list) => {
           this.enrollments.set(list);
           this.loading.set(false);
         },
-        error: () => this.loading.set(false),
+        error: () => {
+          this.loading.set(false);
+          this.loadError.set(true);
+        },
       });
+  }
+
+  protected retry(): void {
+    this.load();
   }
 }
